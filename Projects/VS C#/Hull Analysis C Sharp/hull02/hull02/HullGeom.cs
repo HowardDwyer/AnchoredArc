@@ -80,7 +80,4 @@ namespace hull02
             return (false);
         } // end Extents
     } // end class HullGeom
-    
-
-
 }
