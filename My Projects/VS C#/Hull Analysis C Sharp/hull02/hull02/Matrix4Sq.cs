@@ -134,6 +134,14 @@ namespace hull02
             return;
         } // end Multiply
         // ==================================================================================================
+        public static void Multiply(Matrix4Sq M, FreeVector3D V, ref FreeVector3D MXV)
+        {
+            MXV.X = M.GetCoeff(0, 0) * V.X + M.GetCoeff(0, 1) * V.Y + M.GetCoeff(0, 2) * V.Z;
+            MXV.Y = M.GetCoeff(1, 0) * V.X + M.GetCoeff(1, 1) * V.Y + M.GetCoeff(1, 2) * V.Z;
+            MXV.Z = M.GetCoeff(2, 0) * V.X + M.GetCoeff(2, 1) * V.Y + M.GetCoeff(2, 2) * V.Z;
+            return;
+        } // end Multiply
+        // ==================================================================================================
 
         // ======== operators ===============================================================================
         public static Matrix4Sq operator * (Matrix4Sq M1, Matrix4Sq M2)
@@ -142,15 +150,23 @@ namespace hull02
             Multiply(M1, M2, ref M1XM2);
             return(M1XM2);
         } // end operator *
-        
+
         // ==================================================================================================
-        public static Point3D operator * (Matrix4Sq M, Point3D P)
+        public static Point3D operator *(Matrix4Sq M, Point3D P)
         {
-            Point3D  MXP = new Point3D();
+            Point3D MXP = new Point3D(P);
             Multiply(M, P, ref MXP);
             return (MXP);
         } // end operator *
-        
+
+        // ==================================================================================================
+        public static FreeVector3D operator *(Matrix4Sq M, FreeVector3D V)
+        {
+            FreeVector3D MXV = new FreeVector3D();
+            Multiply(M, V, ref MXV);
+            return (MXV);
+        } // end operator *
+
         // ==================================================================================================
     } // end Matrix4Sq
 }

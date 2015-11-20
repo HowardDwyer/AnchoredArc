@@ -153,6 +153,15 @@ namespace hull02
             return (AminusB);
         } //end operator -
         //========================================================================================================
+        public static Point3D operator +(Point3D A, FreeVector3D B)
+        {
+            Point3D AplusB = new Point3D(A);
+            AplusB.X = A.X + B.X;
+            AplusB.Y = A.Y + B.Y;
+            AplusB.Z = A.Z + B.Z;
+            return (AplusB);
+        } //end operator +
+        //========================================================================================================
         public override bool Extents(ref double minX, ref double maxX, ref double minY, ref double maxY, 
             ref double minZ, ref double maxZ)
         {
@@ -161,6 +170,31 @@ namespace hull02
             minZ = this.Z; maxZ = this.Z;
             return (true);
         } // end Extents
+        //========================================================================================================
+        public static double DistanceBetween(Point3D A, Point3D B)
+        {
+            return ((A - B).Length());
+        } //end DistanceBetween
+        //========================================================================================================
+        public static bool AreCoincident(Point3D A, Point3D B)
+        {
+            return (HullUtil.NearZero((A - B).Length()));
+        } //end AreCoincident
+        //========================================================================================================
+        public static bool AreDistinct(Point3D A, Point3D B)
+        {
+            return (HullUtil.NotNearZero((A - B).Length()));
+        } //end AreDistinct
+        //========================================================================================================
+        public static bool operator ==(Point3D A, Point3D B)
+        {
+            return (AreCoincident(A, B) && (A.DisplayColor == B.DisplayColor));
+        } //end operator ==
+        //========================================================================================================
+        public static bool operator !=(Point3D A, Point3D B)
+        {
+            return (!(A == B));
+        } //end operator !=
         //========================================================================================================
 
     } // end class Point3D

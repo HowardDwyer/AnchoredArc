@@ -82,14 +82,38 @@ namespace hull02
             }
         } // end constructor
         //========================================================================================================
-        public static FreeVector3D operator + (FreeVector3D A, FreeVector3D B)
+        public static FreeVector3D operator +(FreeVector3D A, FreeVector3D B)
         {
             FreeVector3D AplusB = new FreeVector3D();
             AplusB.X = A.X + B.X;
             AplusB.Y = A.Y + B.Y;
             AplusB.Z = A.Z + B.Z;
-            return(AplusB);
+            return (AplusB);
         } // end operator +
+        //========================================================================================================
+        public static FreeVector3D operator /(double s, FreeVector3D A)
+        {
+            FreeVector3D aDivS = new FreeVector3D();
+            if(HullUtil.NotNearZero(s))
+            {
+                aDivS.X = A.X / s;
+                aDivS.Y = A.Y / s;
+                aDivS.Z = A.Z / s;
+            }
+            return (aDivS);
+        } // end operator /
+        //========================================================================================================
+        public static FreeVector3D operator *(double s, FreeVector3D A)
+        {
+            FreeVector3D sA = new FreeVector3D();
+            sA.X = s * A.X;
+            sA.Y = s * A.Y;
+            sA.Z = s * A.Z;
+            return (sA);
+        } // end operator *
+        //========================================================================================================
+        public static FreeVector3D operator *(FreeVector3D A, double s)
+        { return (s * A); } // end operator *
         //========================================================================================================
         public static FreeVector3D operator - (FreeVector3D A, FreeVector3D B)
         {
@@ -99,15 +123,64 @@ namespace hull02
             AminusB.Z = A.Z - B.Z;
             return (AminusB);
         } //end operator -
-       //========================================================================================================
-        public static double dot (FreeVector3D A, FreeVector3D B)
+
+        //========================================================================================================
+        public static double Dot(FreeVector3D A, FreeVector3D B)
         {
-            double dotProd = 0.0 ;
+            double dotProd = 0.0;
             dotProd += A.X * B.X;
             dotProd += A.Y * B.Y;
             dotProd += A.Z * B.Z;
             return (dotProd);
-        } //end dot
+        } //end Dot
+        //========================================================================================================
+        public static bool AreOrthogonal(FreeVector3D A, FreeVector3D B)
+        {
+            FreeVector3D A2 = new FreeVector3D(A);
+            FreeVector3D B2 = new FreeVector3D(B);
+            A2.Normalize(); B2.Normalize();
+            return (HullUtil.NearZero(Dot(A2, B2)));
+        } //end AreOrthogonal
+        //========================================================================================================
+        public static bool AreParallel(FreeVector3D A, FreeVector3D B)
+        {
+            FreeVector3D A2 = new FreeVector3D(A);
+            FreeVector3D B2 = new FreeVector3D(B);
+            bool nonZeroVectors = A2.Normalize() && B2.Normalize();
+            return (nonZeroVectors && HullUtil.NearEqual(1.0 , Math.Abs(Dot(A2, B2))));
+        } //end AreParallel
+        //========================================================================================================
+        public double Length()
+        {
+            return (Math.Sqrt(X * X + Y * Y + Z * Z));
+        } //end Length
+        //========================================================================================================
+        public bool IsZero()
+        {
+            return (HullUtil.NearZero(Length()));
+        } //end Length
+        //========================================================================================================
+        public bool Normalize()
+        {
+            bool ok = !IsZero();
+            if(ok)
+            {
+                double magnitude = Length();
+                X = X / magnitude;
+                Y = Y / magnitude;
+                Z = Z / magnitude;
+            }
+            return (ok);
+        } //end Normalize
+        //========================================================================================================
+        public static FreeVector3D cross(FreeVector3D A, FreeVector3D B)
+        {
+            FreeVector3D aCrossB = new FreeVector3D();
+            aCrossB.X = A.Y * B.Z - A.Z * B.Y;
+            aCrossB.Y = -A.X * B.Z + A.Z * B.X;
+            aCrossB.Z = A.X * B.Y - A.Y * B.X;
+            return (aCrossB);
+        } //end cross
         //========================================================================================================
 
     } // end class FreeVector3D
