@@ -15,7 +15,6 @@ namespace hull02
     {
         // ======= fields =========================================================================================
         private double[] PtCoord = new double[3];
-
         // ======= properties =====================================================================================
         public double X
         {
@@ -143,7 +142,63 @@ namespace hull02
                 DisplayColor = DEFAULTCOLOR;
             }
         } // end constructor
+        // ======================================================================================================
+        public override void ScaleBy(double scaleFactor)
+        {
+            // we will not allow a scaling by zero
+            if (HullUtil.NotNearZero(scaleFactor))
+            {
+                X = scaleFactor * X;
+                Y = scaleFactor * Y;
+                Z = scaleFactor * Z;
+            }
+            return;
+        } // end ScaleBy
         //========================================================================================================
+        public override bool Extents(ref double minX, ref double maxX, ref double minY, ref double maxY, 
+            ref double minZ, ref double maxZ)
+        {
+            minX = this.X; maxX = this.X;
+            minY = this.Y; maxY = this.Y;
+            minZ = this.Z; maxZ = this.Z;
+            return (true);
+        } // end Extents
+        //========================================================================================================
+        public override bool TransformBy(Matrix4Sq M)
+        {
+            // a 3D point is rotated by the 4X4 transformation matrix and translated.
+            double newX = M.GetCoeff(0, 0) * X + M.GetCoeff(0, 1) * Y + M.GetCoeff(0, 2) * Z 
+                + M.GetCoeff(0, 3);
+            double newY = M.GetCoeff(1, 0) * X + M.GetCoeff(1, 1) * Y + M.GetCoeff(1, 2) * Z 
+                + M.GetCoeff(1, 3);
+            double newZ = M.GetCoeff(2, 0) * X + M.GetCoeff(2, 1) * Y + M.GetCoeff(2, 2) * Z 
+                + M.GetCoeff(2, 3);
+            X = newX;
+            Y = newY;
+            Z = newZ;
+            return (true);
+        } // end TransformBy
+        //========================================================================================================
+        public static double DistanceBetween(Point3D A, Point3D B)
+        {
+            return ((A - B).Length);
+        } //end DistanceBetween
+        //========================================================================================================
+        public static bool AreCoincident(Point3D A, Point3D B)
+        {
+            return (HullUtil.NearZero(DistanceBetween(A,B)));
+        } //end AreCoincident
+        //========================================================================================================
+        public static bool AreDistinct(Point3D A, Point3D B)
+        {
+            return (!AreCoincident(A,B));
+        } //end AreDistinct
+        //========================================================================================================
+        public bool Equals(Point3D B)
+        {
+            return (AreCoincident(this, B) && (this.DisplayColor == B.DisplayColor));
+        } //end Equals
+        //========= operators ===================================================================================
         public static FreeVector3D operator -(Point3D A, Point3D B)
         {
             FreeVector3D AminusB = new FreeVector3D();
@@ -162,41 +217,6 @@ namespace hull02
             return (AplusB);
         } //end operator +
         //========================================================================================================
-        public override bool Extents(ref double minX, ref double maxX, ref double minY, ref double maxY, 
-            ref double minZ, ref double maxZ)
-        {
-            minX = this.X; maxX = this.X;
-            minY = this.Y; maxY = this.Y;
-            minZ = this.Z; maxZ = this.Z;
-            return (true);
-        } // end Extents
-        //========================================================================================================
-        public static double DistanceBetween(Point3D A, Point3D B)
-        {
-            return ((A - B).Length());
-        } //end DistanceBetween
-        //========================================================================================================
-        public static bool AreCoincident(Point3D A, Point3D B)
-        {
-            return (HullUtil.NearZero((A - B).Length()));
-        } //end AreCoincident
-        //========================================================================================================
-        public static bool AreDistinct(Point3D A, Point3D B)
-        {
-            return (HullUtil.NotNearZero((A - B).Length()));
-        } //end AreDistinct
-        //========================================================================================================
-        public static bool operator ==(Point3D A, Point3D B)
-        {
-            return (AreCoincident(A, B) && (A.DisplayColor == B.DisplayColor));
-        } //end operator ==
-        //========================================================================================================
-        public static bool operator !=(Point3D A, Point3D B)
-        {
-            return (!(A == B));
-        } //end operator !=
-        //========================================================================================================
-
     } // end class Point3D
 
 }

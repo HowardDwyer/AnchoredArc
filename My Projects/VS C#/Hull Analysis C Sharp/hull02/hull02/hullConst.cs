@@ -9,7 +9,7 @@ namespace hull02
     //==============================================================================================================
     // this class is used as a container for constants used in hull analysis projects
     //==============================================================================================================
-    static class hullConst
+    public static class hullConst
     {
         // parameters which shape the display
         public const int MINWINDOWWIDTH = 450;

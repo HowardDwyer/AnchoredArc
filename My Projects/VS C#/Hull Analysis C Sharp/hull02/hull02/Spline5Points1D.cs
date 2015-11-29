@@ -10,21 +10,28 @@ namespace hull02
     // the node points are equally spaced at t=0, t=1, t=2, t=3, t=4
     // the spline uses free (unclamped) end conditions for both ends
     //=============================================================================================
-    class Spline5Points1D
+    public class Spline5Points1D
     {
         // ======= fields =========================================================================
         public const int NUMNODEPOINTS=5;
-        private bool IsDefined = false;
+        private bool isDefined = false;
         private double[] aCoeff = new double[NUMNODEPOINTS];
         private double[] bCoeff = new double[NUMNODEPOINTS];
         private double[] cCoeff = new double[NUMNODEPOINTS];
         private double[] dCoeff = new double[NUMNODEPOINTS];
-
-        //=========================================================================================
+        // ======= properties ======================================================================
+        public bool IsDefined
+        {
+            get
+            {
+                return (isDefined);
+            } // end get
+        } // end IsDefined
+        // ======= methods =========================================================================
         public Spline5Points1D()  // default constructor
         {
-            IsDefined=false;
-            for(int i=0;i<NUMNODEPOINTS;i++)
+            isDefined = false;
+            for (int i = 0; i < NUMNODEPOINTS; i++)
             {
                 aCoeff[i] = 0.0;
                 bCoeff[i] = 0.0;
@@ -35,12 +42,9 @@ namespace hull02
         //=========================================================================================
         public Spline5Points1D(double p0, double p1, double p2, double p3, double p4)  // constructor
         {
-            IsDefined = true;
             ConstructCoefficients(p0, p1, p2, p3, p4);
         } // end constructor
-
-        // ======= properties ======================================================================
-        // ======= methods =========================================================================
+        //=========================================================================================
         public void ConstructCoefficients(double p0, double p1, double p2, double p3, double p4)
         {
             // the a coefficients are simply the node values
@@ -86,7 +90,7 @@ namespace hull02
             bCoeff[3] = p4 - p3 - (2.0 * cCoeff[3] + cCoeff[4]) / 3.0;
             bCoeff[4] = 0.0;  //not used
 
-            IsDefined = true;
+            isDefined = true;
             return;
         }  // end ConstructCoefficients
         //=========================================================================================

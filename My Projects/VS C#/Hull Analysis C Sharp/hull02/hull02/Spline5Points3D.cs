@@ -10,22 +10,13 @@ namespace hull02
     // the node points are equally spaced at t=0, t=1, t=2, t=3, t=4
     // the spline uses free (unclamped) end conditions for both ends
     //=============================================================================================
-    class Spline5Points3D :HullGeom
+    public class Spline5Points3D :HullGeom
     {
         // ======= fields =========================================================================
         public const int NUMNODEPOINTS= Spline5Points1D.NUMNODEPOINTS;
-        private bool IsDefined = false;
         private Spline5Points1D SplineX = new Spline5Points1D();
         private Spline5Points1D SplineY = new Spline5Points1D();
         private Spline5Points1D SplineZ = new Spline5Points1D();
-        //=========================================================================================
-        public Spline5Points3D()  // default constructor
-        {
-            DEFAULTCOLOR = System.Drawing.Color.Black;
-            IsDefined = false; 
-            Visible = true;
-            DisplayColor = DEFAULTCOLOR;
-        }
         // ======= properties ======================================================================
         public double Length
         {
@@ -52,11 +43,63 @@ namespace hull02
                 return (returnValue);
             } // end get
         } // end Length
+        //=========================================================================================
+        public bool IsDefined
+        {
+            get
+            {
+                return (SplineX.IsDefined && SplineY.IsDefined && SplineZ.IsDefined);
+            } // end get
+        } // end IsDefined
         // ======= methods =========================================================================
+        public Spline5Points3D()  // default constructor
+        {
+            DEFAULTCOLOR = System.Drawing.Color.Black;
+            Visible = true;
+            DisplayColor = DEFAULTCOLOR;
+        } // end default constructor
+        //=========================================================================================
+        public Spline5Points3D(Point3D pt0, Point3D pt1, Point3D pt2, Point3D pt3, Point3D pt4)  // constructor
+        {
+            DEFAULTCOLOR = System.Drawing.Color.Black;
+            Visible = true;
+            DisplayColor = DEFAULTCOLOR;
+            SetNodes(pt0,pt1,pt2,pt3,pt4);
+        } // end constructor
+        //=========================================================================================
+        public void SetNodes(Point3D pt0, Point3D pt1, Point3D pt2, Point3D pt3, Point3D pt4)
+        {
+            SplineX = new Spline5Points1D(pt0.X, pt1.X, pt2.X, pt3.X, pt4.X);
+            SplineY = new Spline5Points1D(pt0.Y, pt1.Y, pt2.Y, pt3.Y, pt4.Y);
+            SplineZ = new Spline5Points1D(pt0.Z, pt1.Z, pt2.Z, pt3.Z, pt4.Z);
+            return;
+        } // end SetNodes
+        //=========================================================================================
+        public void GetNodes(ref Point3D pt0, ref  Point3D pt1, ref Point3D pt2, ref Point3D pt3,
+            ref Point3D pt4)
+        {
+            pt0 = Point(0.0);
+            pt1 = Point(1.0);
+            pt2 = Point(2.0);
+            pt3 = Point(3.0);
+            pt4 = Point(4.0);
+            return;
+        } // end GetNodes
+        //=========================================================================================
+        public Point3D Point(double T)
+        {
+            Point3D returnValue = new Point3D(0.0,0.0,0.0);
+            if (IsDefined) 
+            { 
+                returnValue = new Point3D(SplineX.Value(T),SplineY.Value(T),SplineZ.Value(T)); 
+            }
+            return (returnValue);
+        } // end Point
+        //==========================================================================================
         public double X(double T)
         {
             double returnValue = 0.0;
-            if (IsDefined) { returnValue = SplineX.Value(T);}
+            if (IsDefined) { returnValue = SplineX.Value(T); }
             return (returnValue);
         } // end X
         //==========================================================================================
@@ -109,6 +152,24 @@ namespace hull02
             }
             return;
         } // end ScaleBy
+        //========================================================================================================
+        public override bool TransformBy(Matrix4Sq M)
+        {
+            bool returnValue = true;
+            Point3D pt0 = new Point3D();
+            Point3D pt1 = new Point3D();
+            Point3D pt2 = new Point3D();
+            Point3D pt3 = new Point3D();
+            Point3D pt4 = new Point3D();
+            GetNodes(ref pt0, ref pt1, ref pt2, ref pt3, ref pt4);
+            returnValue = pt0.TransformBy(M) && returnValue;
+            returnValue = pt1.TransformBy(M) && returnValue;
+            returnValue = pt2.TransformBy(M) && returnValue;
+            returnValue = pt3.TransformBy(M) && returnValue;
+            returnValue = pt4.TransformBy(M) && returnValue;
+            SetNodes(pt0, pt1, pt2, pt3, pt4);
+            return (returnValue);
+        } // end TransformBy
         //========================================================================================================
         public override bool Extents(ref double minX, ref double maxX, ref double minY, ref double maxY,
             ref double minZ, ref double maxZ)
