@@ -9,7 +9,7 @@ namespace hull02
     {
         // ======= fields =========================================================================================
         FreeVector3D normal = new FreeVector3D();
-        double dotProd;
+        double pDotN;
         // ======= properties =====================================================================================
         public bool IsDefined
         {
@@ -29,42 +29,42 @@ namespace hull02
             }
         } // end Normal
         //========================================================================================================
-        public double DotProduct
+        public double PDotN
         {
             get
             {
-                return (dotProd);
+                return (pDotN);
             }
 
             set
             {
-                dotProd = value;
+                pDotN = value;
             }
-        } // end DotProduct
+        } // end PDotN
         // ======= methods =======================================================================================
         public Plane3D() // default constructor
         {
             SetNormal(0.0, 0.0, 0.0);
-            DotProduct = 0.0;
+            PDotN = 0.0;
         } // end default constructor
         //========================================================================================================
         public Plane3D(FreeVector3D newNormal, double newDotProduct) // constructor
         {
             SetNormal(newNormal);
-            DotProduct = newDotProduct;
+            PDotN = newDotProduct;
         } // end constructor
         //========================================================================================================
         public Plane3D(Plane3D existingPlane) // constructor
         {
             SetNormal(existingPlane.Normal);
-            DotProduct = existingPlane.DotProduct;
+            PDotN = existingPlane.PDotN;
         } // end constructor
         //========================================================================================================
         public void SetNormal(FreeVector3D newNormal)
         {
             SetNormal(newNormal.X, newNormal.Y, newNormal.Z);
             return;
-        }
+        } // end SetNormal
         //========================================================================================================
         public void SetNormal(double newX, double newY, double newZ)
         {
@@ -72,9 +72,9 @@ namespace hull02
             normal.Y = newY;
             normal.Z = newZ;
             return;
-        }
+        } // end SetNormal
         //========================================================================================================
-        public bool PointOnPlane(ref Point3D pt)
+        public bool GetPointOnPlane(ref Point3D pt)
         {
             // returns a piercing point for one of the principal axes, choosing the one closest
             // to the origin.
@@ -100,19 +100,19 @@ namespace hull02
                     switch (largestComponent)
                     {
                         case 1:
-                            pt.X = DotProduct / Normal.X;
+                            pt.X = PDotN / Normal.X;
                             break;
                         case 2:
-                            pt.Y = DotProduct / Normal.Y;
+                            pt.Y = PDotN / Normal.Y;
                             break;
                         case 3:
-                            pt.Z = DotProduct / Normal.Z;
+                            pt.Z = PDotN / Normal.Z;
                             break;
                     }
                 }
             }
             return (ok);
-        } // end PointOnPlane
+        } // end GetPointOnPlane
         //========================================================================================================
         public bool IsPointOnPlane(Point3D testPoint)
         {
@@ -121,32 +121,72 @@ namespace hull02
             {
                 double thisDotProd = Normal.X * testPoint.X + Normal.Y * testPoint.Y
                     + Normal.Z * testPoint.Z;
-                onPlane = HullUtil.NearEqual(thisDotProd, DotProduct);
+                onPlane = HullUtil.NearEqual(thisDotProd, PDotN);
             }
             return (onPlane);
         } // end IsPointOnPlane
+        //========================================================================================================
+        public bool IsPointAbovePlane(Point3D testPoint)
+        {
+            bool abovePlane = false;
+            if (IsDefined)
+            {
+                double thisDotProd = Normal.X * testPoint.X + Normal.Y * testPoint.Y
+                    + Normal.Z * testPoint.Z;
+                abovePlane = HullUtil.NotNearEqual(thisDotProd, PDotN) && (thisDotProd > 0.0);
+            }
+            return (abovePlane);
+        } // end IsPointAbovePlane
+        //========================================================================================================
+        public bool IsPointBelowPlane(Point3D testPoint)
+        {
+            bool belowPlane = false;
+            if (IsDefined)
+            {
+                double thisDotProd = Normal.X * testPoint.X + Normal.Y * testPoint.Y
+                    + Normal.Z * testPoint.Z;
+                belowPlane = HullUtil.NotNearEqual(thisDotProd, PDotN) && (thisDotProd < 0.0);
+            }
+            return (belowPlane);
+        } // end IsPointBelowPlane
         //========================================================================================================
         public double DistanceFromPlane(Point3D testPoint)
         {
             double distFromPlane = 0.0;
             if (IsDefined)
             {
-                Point3D ptOnPlane = new Point3D();
-                bool ok = PointOnPlane(ref ptOnPlane);
-                if(ok)
+                double thisDotProd = Normal.X * testPoint.X + Normal.Y * testPoint.Y
+                    + Normal.Z * testPoint.Z;
+                double normalLength = Normal.Length;
+                if (HullUtil.NotNearZero(normalLength))
                 {
-                    FreeVector3D v = new FreeVector3D();
-                    v = testPoint - ptOnPlane;
-                    double vDotN = FreeVector3D.Dot(v, Normal);
-                    double lengthN = Normal.Length;
-                    if(HullUtil.NotNearZero(lengthN))
-                    {
-                        distFromPlane = vDotN / lengthN;
-                    }
+                    distFromPlane = (thisDotProd - PDotN) / normalLength;
                 }
             }
             return (distFromPlane);
         } // end DistanceFromPlane
+        //========================================================================================================
+        public bool PiercingPoint(Point3D A, Point3D B, ref Point3D PPt)
+        {
+            bool gotOne = false; ;
+            if (IsDefined)
+            {
+                FreeVector3D AB = new FreeVector3D();
+                AB = B - A;
+                double ABDotN = FreeVector3D.Dot(AB, Normal);
+                if(HullUtil.NotNearZero(ABDotN))
+                {
+                    double ADotN = A.X * Normal.X + A.Y * Normal.Y + A.Z * Normal.Z;
+                    double t = (pDotN - ADotN) / ABDotN;
+                    if((0.0 <= t) && (t <= 1.0))
+                    {
+                        gotOne = true;
+                        PPt = A + t * AB;
+                    }
+                }
+            }
+            return (gotOne);
+        } // end PiercingPoint
         //========================================================================================================
         public bool TransformBy(Matrix4Sq M)
         {
@@ -156,7 +196,7 @@ namespace hull02
                 FreeVector3D newNormal = new FreeVector3D();
                 newNormal = Normal;
                 Point3D newPtOnPlane = new Point3D();
-                if (ok) ok = PointOnPlane(ref newPtOnPlane);
+                if (ok) ok = GetPointOnPlane(ref newPtOnPlane);
                 if (ok) ok = newNormal.TransformBy(M);
                 if (ok) ok = newPtOnPlane.TransformBy(M);
                 if(ok)
@@ -164,7 +204,7 @@ namespace hull02
                     double newDotProd = newNormal.X * newPtOnPlane.X + newNormal.Y * newPtOnPlane.Y 
                         + newNormal.Z * newPtOnPlane.Z;
                     SetNormal(newNormal);
-                    DotProduct = newDotProd;
+                    PDotN = newDotProd;
                 }
             }
             return (ok);

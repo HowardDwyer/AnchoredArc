@@ -25,10 +25,10 @@ namespace hull02
             get
             {
                 double returnValue = 0.0;
-                if (Count>1)
+                if (Count > 1)
                 {
-                    Point3D prevVertex = vertices[vertices.Count-1];
-                    foreach(Point3D vertex in vertices)
+                    Point3D prevVertex = vertices[vertices.Count - 1];
+                    foreach (Point3D vertex in vertices)
                     {
                         returnValue += Point3D.DistanceBetween(prevVertex, vertex);
                         prevVertex = vertex;
@@ -37,6 +37,26 @@ namespace hull02
                 return (returnValue);
             } // end get
         } // end Perimeter
+        //========================================================================================================
+        public double Length
+        {
+            // the same as perimeter but without the connection from last vertex to first
+            // this property is read-only
+            get
+            {
+                double returnValue = 0.0;
+                if (Count > 1)
+                {
+                    int iPlus1=0;
+                    for (int i = 0; i < (Count - 1); i++)
+                    {
+                        iPlus1 = i + 1;
+                        returnValue += Point3D.DistanceBetween(vertices[i], vertices[iPlus1]);
+                    }
+                }
+                return (returnValue);
+            } // end get
+        } // end Length
         //========================================================================================================
         public int Count
         {
@@ -164,6 +184,29 @@ namespace hull02
             }
             return (ok);
         } // end Extents
+        //==========================================================================================
+        public int IntersectionWithPlane(Plane3D cuttingPlane, ref List<Point3D> pts)
+        {
+            int numPtsFound = 0;
+            bool gotOne = false;
+            if ((Count > 2) && cuttingPlane.IsDefined)
+            {
+                Point3D nextPoint = new Point3D();
+                Point3D prevVertex = vertices[vertices.Count - 1];
+                foreach (Point3D vertex in vertices)
+                {
+                    gotOne = cuttingPlane.PiercingPoint(prevVertex, vertex, ref nextPoint);
+                    if(gotOne)
+                    {
+                        numPtsFound++;
+                        pts.Add(nextPoint);
+                        nextPoint = new Point3D();
+                    }
+                    prevVertex = vertex;
+                }
+            }
+            return (numPtsFound);
+        } // end IntersectionWithPlane
         //==========================================================================================
     } // end class Polygon3D
 }
