@@ -64,6 +64,7 @@
     </Compile>
     <Compile Include="Matrix4Sq.cs" />
     <Compile Include="Plane3D.cs" />
+    <Compile Include="PlanePolygon3D.cs" />
     <Compile Include="Point3D.cs" />
     <Compile Include="Polygon3D.cs" />
     <Compile Include="Program.cs" />

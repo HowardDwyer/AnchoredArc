@@ -74,6 +74,30 @@ namespace hull02
             DisplayColor = DEFAULTCOLOR;
         } // end default constructor 
         //========================================================================================================
+        public Polygon3D(Polygon3D existingPolygon)  // constructor
+        {
+            DEFAULTCOLOR = System.Drawing.Color.Black;
+            Visible = existingPolygon.Visible;
+            DisplayColor = existingPolygon.DisplayColor;
+            foreach (Point3D existingVertex in existingPolygon.vertices)
+            {
+                Point3D newVertex = new Point3D(existingVertex);
+                Add(newVertex);
+            }
+        } // end constructor 
+        //========================================================================================================
+        public Polygon3D(List<Point3D> vertexList)  // constructor
+        {
+            DEFAULTCOLOR = System.Drawing.Color.Black;
+            Visible = true;
+            DisplayColor = DEFAULTCOLOR;
+            foreach (Point3D pt in vertexList)
+            {
+                Point3D newVertex = new Point3D(pt);
+                Add(newVertex);
+            }
+        } // end constructor 
+        //========================================================================================================
         public override bool TransformBy(Matrix4Sq M)
         {
             bool returnValue = true;
@@ -196,7 +220,7 @@ namespace hull02
                 foreach (Point3D vertex in vertices)
                 {
                     gotOne = cuttingPlane.PiercingPoint(prevVertex, vertex, ref nextPoint);
-                    if(gotOne)
+                    if (gotOne)
                     {
                         numPtsFound++;
                         pts.Add(nextPoint);
@@ -207,6 +231,64 @@ namespace hull02
             }
             return (numPtsFound);
         } // end IntersectionWithPlane
+        //==========================================================================================
+        public bool SectionAbovePlane(Plane3D cuttingPlane, ref Polygon3D polyAbove)
+        {
+            bool ok = cuttingPlane.IsDefined;
+            polyAbove = new Polygon3D();
+            Point3D newVertex = new Point3D();
+            polyAbove.Visible = Visible;
+            polyAbove.DisplayColor = DisplayColor;
+            if (ok)
+            {
+                foreach (Point3D vertex in vertices)
+                {
+                    if (cuttingPlane.IsPointAbovePlane(vertex) || cuttingPlane.IsPointOnPlane(vertex))
+                    {
+                        newVertex = new Point3D(vertex);
+                        polyAbove.Add(newVertex);
+                    }
+                }
+                List<Point3D> piercingPoints = new List<Point3D>();
+                int numPiercings = IntersectionWithPlane(cuttingPlane, ref piercingPoints);
+                if (numPiercings > 0)
+                    foreach (Point3D vertex in piercingPoints)
+                    {
+                        newVertex = new Point3D(vertex);
+                        polyAbove.Add(newVertex);
+                    }
+            }
+            return (ok);
+        } // end SectionAbovePlane
+        //==========================================================================================
+        public bool SectionBelowPlane(Plane3D cuttingPlane, ref Polygon3D polyBelow)
+        {
+            bool ok = cuttingPlane.IsDefined;
+            polyBelow = new Polygon3D();
+            Point3D newVertex = new Point3D();
+            polyBelow.Visible = Visible;
+            polyBelow.DisplayColor = DisplayColor;
+            if (ok)
+            {
+                foreach (Point3D vertex in vertices)
+                {
+                    if (cuttingPlane.IsPointBelowPlane(vertex) || cuttingPlane.IsPointOnPlane(vertex))
+                    {
+                        newVertex = new Point3D(vertex);
+                        polyBelow.Add(newVertex);
+                    }
+                }
+                List<Point3D> piercingPoints = new List<Point3D>();
+                int numPiercings = IntersectionWithPlane(cuttingPlane, ref piercingPoints);
+                if (numPiercings > 0)
+                    foreach (Point3D vertex in piercingPoints)
+                    {
+                        newVertex = new Point3D(vertex);
+                        polyBelow.Add(newVertex);
+                    }
+            }
+            return (ok);
+        } // end SectionBelowPlane
         //==========================================================================================
     } // end class Polygon3D
 }

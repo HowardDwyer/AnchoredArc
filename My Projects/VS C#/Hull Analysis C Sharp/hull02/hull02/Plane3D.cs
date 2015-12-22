@@ -48,6 +48,18 @@ namespace hull02
             PDotN = 0.0;
         } // end default constructor
         //========================================================================================================
+        public Plane3D(Point3D A,Point3D B,Point3D C) // constructor
+        {
+            FreeVector3D AB = new FreeVector3D();
+            FreeVector3D AC = new FreeVector3D();
+            FreeVector3D newN = new FreeVector3D();
+            AB = B - A;
+            AC = C - A;
+            newN = FreeVector3D.cross(AB, AC);
+            SetNormal(newN);
+            PDotN = A.X * newN.X + A.Y * newN.Y + A.Z * newN.Z;
+        } // end constructor
+        //========================================================================================================
         public Plane3D(FreeVector3D newNormal, double newDotProduct) // constructor
         {
             SetNormal(newNormal);
@@ -191,7 +203,7 @@ namespace hull02
         public bool TransformBy(Matrix4Sq M)
         {
             bool ok = IsDefined;
-            if(ok)
+            if (ok)
             {
                 FreeVector3D newNormal = new FreeVector3D();
                 newNormal = Normal;
@@ -199,9 +211,9 @@ namespace hull02
                 if (ok) ok = GetPointOnPlane(ref newPtOnPlane);
                 if (ok) ok = newNormal.TransformBy(M);
                 if (ok) ok = newPtOnPlane.TransformBy(M);
-                if(ok)
+                if (ok)
                 {
-                    double newDotProd = newNormal.X * newPtOnPlane.X + newNormal.Y * newPtOnPlane.Y 
+                    double newDotProd = newNormal.X * newPtOnPlane.X + newNormal.Y * newPtOnPlane.Y
                         + newNormal.Z * newPtOnPlane.Z;
                     SetNormal(newNormal);
                     PDotN = newDotProd;
@@ -209,6 +221,15 @@ namespace hull02
             }
             return (ok);
         } // end TransformBy
+        //========================================================================================================
+        public void ReverseOrientation()
+        {
+            FreeVector3D newNormal = new FreeVector3D();
+            newNormal = -1.0*Normal;
+            SetNormal(newNormal);
+            PDotN = -1.0*PDotN;
+            return;
+        } // end ReverseOrientation
         //========================================================================================================
     } // end Plane3D
 }
