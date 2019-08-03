@@ -41,11 +41,11 @@ int main(int argc, char** argv)
 	// Allocate Arrays
 	cout << "AllocateArrays\n";
 	AllocateArrays();
-/*
+
 	// POPULATE AREA AND X ARRAYS
 	cout << "PopulateArrays\n";
-	PopulateArrays();
-
+//	PopulateArrays();
+/*
 	// MATRIX MULTIPLICATION
 	cout << "MatrixMatrix\n";
 	MatrixMatrix();
@@ -79,7 +79,6 @@ int main(int argc, char** argv)
 	return 0;
 }
 
-
 //============== ALLOCATE ARRAYS ==================================================================
 void AllocateArrays()
 {
@@ -100,20 +99,26 @@ void AllocateArrays()
 		ATA[i] = new double[numNodesTimesThree];
 } // AllocateArrays
 
+//============== MATRIX VECTOR ========================================================
+//  performs  Y = Y + ATA*X
 void MatrixVector()
 {
-	for (int i = 0; i < 3 * m_nNumNodes; i++)
+	int numNodesTimesThree = 3 * m_nNumNodes;
+	double dotProdSum;
+	for (int i = 0; i < numNodesTimesThree; i++)
 	{
-		Y[i] = 0.0;
-		for (int k = 0; k < 3 * m_nNumNodes; k++) {
-			Y[i] = Y[i] + ATA[i][k] * X[k];
+		dotProdSum = 0.0;
+		for (int k = 0; k < numNodesTimesThree; k++) {
+			dotProdSum = dotProdSum + ATA[i][k] * X[k];
 		}
+		Y[i] = dotProdSum;
 	}
+} // MatrixVector
 
-}
+//================= MATRIX MATRIX ===================================================================
+// COMPUTE ATA = Area^T * Area;
 void MatrixMatrix()
 {
-	// COMPUTE ATA = Area^T * Area;
 	for (int j = 0; j < 3 * m_nNumNodes; j++) {
 		for (int i = 0; i < 3 * m_nNumNodes; i++) {
 			ATA[i][j] = 0.0;
@@ -123,44 +128,50 @@ void MatrixMatrix()
 
 		}
 	}
-}
+} // MatrixMatrix
 
+//===================== POPULATE ARRAYS ===================================================
 void PopulateArrays()
 {
+	int nodeIndexTimesThree;
+	int numOfNodesTimesThree = 3 * m_nNumNodes;
+	double oneThird = 1.0 / 3.0;
 	// Loop over elements
 	for (int i = 0; i < m_nNumElems; i++)
 	{
-		// Loop over nodes in element
+		// Get Area of Element
+		double element_area = m_pElements[i].GetArea();
+		double oneThirdArea = element_area * oneThird;
+
+		// Loop over vertices in this triangular element
 		for (int k = 0; k < 3; k++) {
 
-			// Get Index of Node
-			int NodeNumber = m_pElements[i].GetNode(k)->GetLabel() - 1;
-			// Get Area of Element
-			double element_area = m_pElements[i].GetArea();
+			// Get Index of Node which is located at vertex k in triangular element i.
+			int nodeNumber = m_pElements[i].GetNode(k)->GetLabel() - 1;
+			nodeIndexTimesThree = nodeNumber * 3;
 
 			// Accumulate area in area[][] array
 			for (int j = 0; j < 3; j++) {
-				area[3 * NodeNumber + j][3 * NodeNumber + j] = area[3
-					* NodeNumber + j][3 * NodeNumber + j] + element_area;
-				if (3 * NodeNumber + j + 1 < 3 * m_nNumNodes) {
-					area[3 * NodeNumber + j + 1][3 * NodeNumber + j] = area[3
-						* NodeNumber + j + 1][3 * NodeNumber + j]
-						+ element_area / 3.0;
+				area[nodeIndexTimesThree + j][nodeIndexTimesThree + j] += element_area;
+
+				if (nodeIndexTimesThree + j + 1 < numOfNodesTimesThree) {
+					area[nodeIndexTimesThree + j + 1][nodeIndexTimesThree + j] += oneThirdArea;
 				}
-				if (3 * NodeNumber + j - 1 > 0) {
-					area[3 * NodeNumber + j][3 * NodeNumber + j - 1] = area[3
-						* NodeNumber + j][3 * NodeNumber + j - 1]
-						+ element_area / 3.0;
+
+				if (nodeIndexTimesThree + j - 1 > 0) {
+					area[nodeIndexTimesThree + j][nodeIndexTimesThree + j - 1] += oneThirdArea;
 				}
 			}
-			// Accumulate normal in X[] array
+			
+			// Accumulate normals of triangular elements in X[] array
 			CVector normal = m_pElements[i].GetFaceNormal();
-			X[3 * NodeNumber] = X[3 * NodeNumber] + normal.GetX();
-			X[3 * NodeNumber + 1] = X[3 * NodeNumber + 1] + normal.GetY();
-			X[3 * NodeNumber + 2] = X[3 * NodeNumber + 2] + normal.GetZ();
-		}
-	}
-}
+			X[nodeIndexTimesThree]     += normal.GetX();
+			X[nodeIndexTimesThree + 1] += normal.GetY();
+			X[nodeIndexTimesThree + 2] += normal.GetZ();
+
+		} // loop through the nodes which are vertices for this element
+	} // loop through each triangular element
+} // PopulateArrays
 
 //=========== SET UP MODEL ==================================================================
 // width and height are hard-coded as 200 x 200
