@@ -30,7 +30,7 @@ double* X;
 double* Y;
 double** area;
 double** ATA;
-double DX_GLOBAL = 0.5;
+double DX_GLOBAL = 10;
 
 int main(int argc, char** argv)
 {
@@ -38,10 +38,10 @@ int main(int argc, char** argv)
 	cout << "SetupModel\n";
 	SetupModel();
 
-/*	// Allocate Arrays
+	// Allocate Arrays
 	cout << "AllocateArrays\n";
 	AllocateArrays();
-
+/*
 	// POPULATE AREA AND X ARRAYS
 	cout << "PopulateArrays\n";
 	PopulateArrays();
@@ -79,19 +79,26 @@ int main(int argc, char** argv)
 	return 0;
 }
 
+
+//============== ALLOCATE ARRAYS ==================================================================
 void AllocateArrays()
 {
-	X = new double[3 * m_nNumNodes];
-	Y = new double[3 * m_nNumNodes];
-	area = new double* [3 * m_nNumNodes];
-	for (int i = 0; i < 3 * m_nNumNodes; ++i)
-		area[i] = new double[3 * m_nNumNodes];
+	int numNodesTimesThree = 3 * m_nNumNodes;
 
-	ATA = new double* [3 * m_nNumNodes];
-	for (int i = 0; i < 3 * m_nNumNodes; ++i)
-		ATA[i] = new double[3 * m_nNumNodes];
+	// X and Y are 1D arrays
+	X = new double[numNodesTimesThree];
+	Y = new double[numNodesTimesThree];
 
-}
+	// area is a square 2D array
+	area = new double* [numNodesTimesThree];
+	for (int i = 0; i < numNodesTimesThree; ++i)
+		area[i] = new double[numNodesTimesThree];
+
+	// ATA is a square 2D array
+	ATA = new double* [numNodesTimesThree];
+	for (int i = 0; i < numNodesTimesThree; ++i)
+		ATA[i] = new double[numNodesTimesThree];
+} // AllocateArrays
 
 void MatrixVector()
 {
@@ -192,7 +199,7 @@ void SetupModel() {
 		for (int j = 0; j < ny; j++) {
 			nodecoord1[cntByThree] = nodeXValue;
 			nodecoord1[cntByThree + 1] = negHalfHeight + j * dx;
-			nodecoord1[cntByThree + 2] = 0;
+			nodecoord1[cntByThree + 2] = 0.0;
 			cntByThree += 3;
 		}
 	}
