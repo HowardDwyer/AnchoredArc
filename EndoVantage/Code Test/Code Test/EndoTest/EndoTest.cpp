@@ -167,15 +167,12 @@ void SetupModel() {
 	// vertex indices: each element is composed of 3 nodes
 	int* conn1;
 
-	int ny = 0;
-	int nx = 0;
-
 	double dx = DX_GLOBAL;
 	double width = 200;
 	double height = 200;
-	nx = (int)(width / dx + 1);  // number of columns of nodes
-	ny = (int)(height / dx + 1); // number of rows of nodes
-	nnode = nx * ny;             // total number of nodes
+	int nx = (int)(width / dx + 1);  // number of columns of nodes
+	int ny = (int)(height / dx + 1); // number of rows of nodes
+	nnode = nx * ny;                 // total number of nodes
 
 	nodecoord1 = new double[3 * nnode]; // (X,Y,Z) for the coordinates
 	nelem = (nx - 1) * (ny - 1) * 2; // number of triangle elements
@@ -189,33 +186,30 @@ void SetupModel() {
 	//----------------------------------------------------------------------------------
 	// create simple mesh
 	int cnt;
-	int threeCnt = 0;
+	int cntByThree = 0;
 	for (int i = 0; i < nx; i++) {
 		nodeXValue = negHalfWidth + i * dx;
 		for (int j = 0; j < ny; j++) {
-			nodecoord1[threeCnt] = nodeXValue;
-			nodecoord1[threeCnt + 1] = negHalfHeight + j * dx;
-			nodecoord1[threeCnt + 2] = 0;
-			threeCnt += 3;
+			nodecoord1[cntByThree] = nodeXValue;
+			nodecoord1[cntByThree + 1] = negHalfHeight + j * dx;
+			nodecoord1[cntByThree + 2] = 0;
+			cntByThree += 3;
 		}
 	}
 
 	//----------------------------------------------------------------------------------
-//	cnt = 0;
-	threeCnt = 0;
+	cntByThree = 0;
 	for (int i = 0; i < nx - 1; i++) {
 		for (int j = 0; j < ny - 1; j++) {
-			conn1[threeCnt] = i * ny + j + 1;
-			conn1[threeCnt + 1] = (i + 1) * ny + j + 1;
-			conn1[threeCnt + 2] = i * ny + j + 1 + 1;
-//			cnt++;
-			threeCnt += 3;
+			conn1[cntByThree] = i * ny + j + 1;
+			conn1[cntByThree + 1] = (i + 1) * ny + j + 1;
+			conn1[cntByThree + 2] = i * ny + j + 1 + 1;
+			cntByThree += 3;
 
-			conn1[threeCnt] = (i + 1) * ny + j + 1;
-			conn1[threeCnt + 1] = (i + 1) * ny + j + 1 + 1;
-			conn1[threeCnt + 2] = i * ny + j + 1 + 1;
-//			cnt++;
-			threeCnt += 3;
+			conn1[cntByThree] = (i + 1) * ny + j + 1;
+			conn1[cntByThree + 1] = (i + 1) * ny + j + 1 + 1;
+			conn1[cntByThree + 2] = i * ny + j + 1 + 1;
+			cntByThree += 3;
 		}
 	}
 
@@ -229,25 +223,25 @@ void SetupModel() {
 	m_pElements = new CElement[m_nNumElems];
 
 	//----------------------------------------------------------------------------------
-	int threeI=0;
+	cntByThree =0;
 	for (int i = 0; i < m_nNumNodes; i++) {
-		m_pNodes[i].SetX(nodecoord1[threeI]);
-		m_pNodes[i].SetY(nodecoord1[threeI + 1]);
-		m_pNodes[i].SetZ(nodecoord1[threeI + 2]);
+		m_pNodes[i].SetX(nodecoord1[cntByThree]);
+		m_pNodes[i].SetY(nodecoord1[cntByThree + 1]);
+		m_pNodes[i].SetZ(nodecoord1[cntByThree + 2]);
 		m_pNodes[i].SetLabel(i + 1);
 		m_pNodes[i].SetInternalLabel(i);
-		threeI += 3;
+		cntByThree += 3;
 	}
 
 	//----------------------------------------------------------------------------------
 	// Setup elements
-	threeI = 0;
+	cntByThree = 0;
 	for (int i = 0; i < m_nNumElems; i++) {
-		m_pElements[i].SetNode(0, &m_pNodes[conn1[threeI] - 1]);
-		m_pElements[i].SetNode(1, &m_pNodes[conn1[threeI + 1] - 1]);
-		m_pElements[i].SetNode(2, &m_pNodes[conn1[threeI + 2] - 1]);
+		m_pElements[i].SetNode(0, &m_pNodes[conn1[cntByThree] - 1]);
+		m_pElements[i].SetNode(1, &m_pNodes[conn1[cntByThree + 1] - 1]);
+		m_pElements[i].SetNode(2, &m_pNodes[conn1[cntByThree + 2] - 1]);
 		m_pElements[i].SetLabel(i + 1);
-		threeI += 3;
+		cntByThree += 3;
 	}
 	//------------------------------------------------------------------------------------
 	// release resources
