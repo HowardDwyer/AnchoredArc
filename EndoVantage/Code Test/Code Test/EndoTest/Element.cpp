@@ -17,6 +17,8 @@ CElement::CElement() {
 	m_bStiffMatrixReady = false;
 	m_iNumNodes = 3;
 	m_ppNodes = new CNode*[3];
+	m_centerComputed = false;
+	m_areaAndNormalComputed = false;
 }
 
 CElement::~CElement() {
@@ -25,70 +27,72 @@ CElement::~CElement() {
 	if (m_pStiffMatrix != NULL)
 		delete[] m_pStiffMatrix;
 }
-CKPoint CElement::GetCenter() {
+
+void CElement::ComputeCenter()
+{
 	double xx = 0.0;
 	double yy = 0.0;
 	double zz = 0.0;
+	double oneThird = 1.0 / 3.0;
 	for (int i = 0; i < this->m_iNumNodes; i++) {
 		CNode* pNode = GetNode(i);
 		xx += pNode->GetX();
 		yy += pNode->GetY();
 		zz += pNode->GetZ();
 	}
-	xx /= 3.0;
-	yy /= 3.0;
-	zz /= 3.0;
-	return CKPoint(xx, yy, zz);
+	m_center.SetX(xx * oneThird);
+	m_center.SetY(yy * oneThird);
+	m_center.SetZ(zz * oneThird);
+	m_centerComputed = true;
+} // CElement::ComputeCenter
+
+CKPoint CElement::GetCenter() 
+{
+	if (!m_centerComputed) { ComputeCenter(); }
+	return CKPoint(m_center.GetX(), m_center.GetY(), m_center.GetZ());
 }
+
 void CElement::SetNodeLabel(int ithNode, int iLabel) {
 	m_iArrayNodeLabels[ithNode] = iLabel;
+	m_centerComputed = false;
+	m_areaAndNormalComputed = false;
 }
+
 int CElement::GetNodeLabel(int ithNode) {
 	return m_iArrayNodeLabels[ithNode];
 }
+
 CNode* CElement::GetNode(int i) {
 	return m_ppNodes[i];;
 }
+
 void CElement::SetNode(int i, CNode* pNode) {
 	m_ppNodes[i] = pNode;
 	m_iArrayNodeLabels[i] = pNode->GetLabel();
 	pNode->AddParentElement(this);
+	m_centerComputed = false;
+	m_areaAndNormalComputed = false;
 }
+
+void CElement::ComputeAreaAndNormal()
+{
+	CNode* pn0 = m_ppNodes[0];
+	CNode* pn1 = m_ppNodes[1];
+	CNode* pn2 = m_ppNodes[2];
+	CVector edge01(pn1->GetX() - pn0->GetX(), pn1->GetY() - pn0->GetY(), pn1->GetZ() - pn0->GetZ());
+	CVector edge02(pn2->GetX() - pn0->GetX(), pn2->GetY() - pn0->GetY(), pn2->GetZ() - pn0->GetZ());
+	m_faceNormal = edge01.Cross(edge02);
+	m_area = m_faceNormal.Length() * 0.5;
+	m_areaAndNormalComputed = true;
+} // CElement::ComputeAreaAndNormal
+
 double CElement::GetArea() {
-	CNode* pn0 = m_ppNodes[0];
-	CNode* pn1 = m_ppNodes[1];
-	CNode* pn2 = m_ppNodes[2];
-	double x0 = pn0->GetX();
-	double y0 = pn0->GetY();
-	double z0 = pn0->GetZ();
-	double x1 = pn1->GetX();
-	double y1 = pn1->GetY();
-	double z1 = pn1->GetZ();
-	double x2 = pn2->GetX();
-	double y2 = pn2->GetY();
-	double z2 = pn2->GetZ();
-	CKPoint pt0(x0, y0, z0), pt1(x1, y1, z1), pt2(x2, y2, z2);
-	CVector v1 = pt1 - pt0;
-	CVector v2 = pt2 - pt0;
-	double dArea = 0.0;
-	dArea = (v1.Cross(v2)).Length();
-	return dArea * 0.5;
-}
+	if (!m_areaAndNormalComputed) { ComputeAreaAndNormal(); }
+	return m_area;
+} // CElement::GetArea
+
 CVector CElement::GetFaceNormal() {
-	CNode* pn0 = m_ppNodes[0];
-	CNode* pn1 = m_ppNodes[1];
-	CNode* pn2 = m_ppNodes[2];
-	double x0 = pn0->GetX();
-	double y0 = pn0->GetY();
-	double z0 = pn0->GetZ();
-	double x1 = pn1->GetX();
-	double y1 = pn1->GetY();
-	double z1 = pn1->GetZ();
-	double x2 = pn2->GetX();
-	double y2 = pn2->GetY();
-	double z2 = pn2->GetZ();
-	CKPoint pt0(x0, y0, z0), pt1(x1, y1, z1), pt2(x2, y2, z2);
-	CVector v1 = pt1 - pt0;
-	CVector v2 = pt2 - pt0;
-	return v1.Cross(v2);
-}
+	if (!m_areaAndNormalComputed) { ComputeAreaAndNormal(); }
+	CVector result(m_faceNormal.GetX(), m_faceNormal.GetY(), m_faceNormal.GetZ());
+	return result;
+}  // CElement::GetFaceNormal()

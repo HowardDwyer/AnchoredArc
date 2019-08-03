@@ -44,7 +44,7 @@ int main(int argc, char** argv)
 
 	// POPULATE AREA AND X ARRAYS
 	cout << "PopulateArrays\n";
-//	PopulateArrays();
+	PopulateArrays();
 /*
 	// MATRIX MULTIPLICATION
 	cout << "MatrixMatrix\n";

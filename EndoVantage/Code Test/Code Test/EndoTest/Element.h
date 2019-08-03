@@ -7,6 +7,7 @@
 #include <string>
 #include <list>
 #include "Node.h"
+#include "Vector.h"
 
 enum ELEMTYPE {
     LTRIANGLETP
@@ -32,7 +33,15 @@ class CElement
     virtual CVector GetFaceNormal();
 
  protected:
-    int m_iLabel;
+	 bool m_centerComputed;
+	 bool m_areaAndNormalComputed;
+	 double m_area;
+	 CVector m_faceNormal;
+	 CKPoint m_center;
+	 void ComputeAreaAndNormal();
+	 void ComputeCenter();
+
+	int m_iLabel;
     CNode** m_ppNodes;
     int m_iNumNodes;
     int m_iNumEdges;
