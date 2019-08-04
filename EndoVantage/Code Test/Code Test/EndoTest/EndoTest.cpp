@@ -22,15 +22,22 @@ CElement* m_pElements;
 
 void AllocateArrays();
 void PopulateArrays();
+void PopulateAreaArray();
+void PopulateTransposedAreaArray();
+void PopulateVectorX();
+void SetVectorYtoZero();
 void MatrixMatrix();
+void MatrixMatrix_AAT();
 void MatrixVector();
 void SetupModel();
 
 void Debug_MockAreaMatrix(int oneThirdOfSize);
+void Debug_MockTransposedAreaMatrix(int oneThirdOfSize);
 
 double* X;
 double* Y;
 double** area;
+double** areaT;
 double** ATA;
 double DX_GLOBAL = 10;
 
@@ -49,16 +56,18 @@ int main(int argc, char** argv)
 	PopulateArrays();
 */
 	cout << "Debug_MockAreaMatrix\n";
-	Debug_MockAreaMatrix(400);
+//	Debug_MockAreaMatrix(200);
+	Debug_MockTransposedAreaMatrix(200);
 
 	// MATRIX MULTIPLICATION
 	cout << "MatrixMatrix\n";
-	MatrixMatrix();
-/*
+//	MatrixMatrix();
+	MatrixMatrix_AAT();
+
 	// COMPUTE Y = ATA*X
 	cout << "MatrixVector\n";
 	MatrixVector();
-
+/*
 	// PRINT L2 NORM OF Y
 	double norm = 0;
 	cout << "Y=( ";
@@ -99,10 +108,28 @@ void Debug_MockAreaMatrix(int oneThirdOfSize)
 		for (int j = 0; j < numNodesTimesThree; j++)
 		{
 			// this formula is nonsense ... it gives positive values in a non-trivial but repeatable pattern
-			area[i][j] = 4.0*abs(sin(5*i + 7*j + 2));
+			areaT[i][j] = 4.0*abs(sin(5*i + 7*j + 2));
 		}
 	}
 } // Debug_MockAreaMatrix
+
+//============== DEBUG MOCK TRANSPOSED AREA MATRIX ===============================================
+// used for testing only.  replaces SetupModel, AllocateArrays, PopulateArrays
+void Debug_MockTransposedAreaMatrix(int oneThirdOfSize)
+{
+	m_nNumNodes = oneThirdOfSize;
+	int numNodesTimesThree = 3 * m_nNumNodes;
+	AllocateArrays();
+
+	for (int i = 0; i < numNodesTimesThree; i++)
+	{
+		for (int j = 0; j < numNodesTimesThree; j++)
+		{
+			// this formula is nonsense ... it gives positive values in a non-trivial but repeatable pattern
+			areaT[j][i] = 4.0 * abs(sin(5 * i + 7 * j + 2));
+		}
+	}
+} // Debug_MockTransposdAreaMatrix
 
 //=========== SET UP MODEL ==================================================================
 // width and height are hard-coded as 200 x 200
@@ -208,9 +235,12 @@ void AllocateArrays()
 	Y = new double[numNodesTimesThree];
 
 	// area is a square 2D array
-	area = new double* [numNodesTimesThree];
+//	area = new double* [numNodesTimesThree];
+//	for (int i = 0; i < numNodesTimesThree; ++i)
+//		area[i] = new double[numNodesTimesThree];
+	areaT = new double* [numNodesTimesThree];
 	for (int i = 0; i < numNodesTimesThree; ++i)
-		area[i] = new double[numNodesTimesThree];
+		areaT[i] = new double[numNodesTimesThree];
 
 	// ATA is a square 2D array
 	ATA = new double* [numNodesTimesThree];
@@ -220,6 +250,15 @@ void AllocateArrays()
 
 //===================== POPULATE ARRAYS ===================================================
 void PopulateArrays()
+{
+//	PopulateAreaArray();
+	PopulateTransposedAreaArray();
+	PopulateVectorX();
+	SetVectorYtoZero();
+} // PopulateArrays
+
+//===================== POPULATE AREA ARRAY ===================================================
+void PopulateAreaArray()
 {
 	int nodeIndexTimesThree;
 	int numOfNodesTimesThree = 3 * m_nNumNodes;
@@ -239,57 +278,97 @@ void PopulateArrays()
 			nodeIndexTimesThree = nodeNumber * 3;
 
 			// Accumulate area in area[][] array
-			for (int j = 0; j < 3; j++) 
+			for (int j = 0; j < 3; j++)
 			{
 				area[nodeIndexTimesThree + j][nodeIndexTimesThree + j] += element_area;
 
-				if (nodeIndexTimesThree + j + 1 < numOfNodesTimesThree) 
+				if (nodeIndexTimesThree + j + 1 < numOfNodesTimesThree)
 				{
 					area[nodeIndexTimesThree + j + 1][nodeIndexTimesThree + j] += oneThirdArea;
 				}
 
-				if (nodeIndexTimesThree + j - 1 > 0) 
+				if (nodeIndexTimesThree + j - 1 > 0)
 				{
 					area[nodeIndexTimesThree + j][nodeIndexTimesThree + j - 1] += oneThirdArea;
 				}
 			}
-			
+		} // loop through the nodes which are vertices for this element
+	} // loop through each triangular element
+} // PopulateAreaArray
+
+//===================== POPULATE TRANSPOSED AREA ARRAY ===================================================
+void PopulateTransposedAreaArray()
+{
+	int nodeIndexTimesThree;
+	int numOfNodesTimesThree = 3 * m_nNumNodes;
+	double oneThird = 1.0 / 3.0;
+	// Loop over elements
+	for (int i = 0; i < m_nNumElems; i++)
+	{
+		// Get Area of Element
+		double element_area = m_pElements[i].GetArea();
+		double oneThirdArea = element_area * oneThird;
+
+		// Loop over vertices in this triangular element
+		for (int k = 0; k < 3; k++) {
+
+			// Get Index of Node which is located at vertex k in triangular element i.
+			int nodeNumber = m_pElements[i].GetNode(k)->GetLabel() - 1;
+			nodeIndexTimesThree = nodeNumber * 3;
+
+			// Accumulate area in areaT[][] array
+			for (int j = 0; j < 3; j++)
+			{
+				areaT[nodeIndexTimesThree + j][nodeIndexTimesThree + j] += element_area;
+
+				if (nodeIndexTimesThree + j + 1 < numOfNodesTimesThree)
+				{
+					areaT[nodeIndexTimesThree + j][nodeIndexTimesThree + j + 1] += oneThirdArea;
+				}
+
+				if (nodeIndexTimesThree + j - 1 > 0)
+				{
+					areaT[nodeIndexTimesThree + j - 1][nodeIndexTimesThree + j] += oneThirdArea;
+				}
+			}
+		} // loop through the nodes which are vertices for this element
+	} // loop through each triangular element
+} //PopulateTransposedAreaArray
+
+//===================== POPULATE VECTOR X ===================================================
+void PopulateVectorX()
+{
+	int nodeIndexTimesThree;
+	// Loop over elements
+	for (int i = 0; i < m_nNumElems; i++)
+	{
+		// Loop over vertices in this triangular element
+		for (int k = 0; k < 3; k++) {
+			// Get Index of Node which is located at vertex k in triangular element i.
+			int nodeNumber = m_pElements[i].GetNode(k)->GetLabel() - 1;
+			nodeIndexTimesThree = nodeNumber * 3;
+
 			// Accumulate normals of triangular elements in X[] array
 			CVector normal = m_pElements[i].GetFaceNormal();
 			X[nodeIndexTimesThree]     += normal.GetX();
 			X[nodeIndexTimesThree + 1] += normal.GetY();
 			X[nodeIndexTimesThree + 2] += normal.GetZ();
-
 		} // loop through the nodes which are vertices for this element
 	} // loop through each triangular element
-
-	//dwyerdebug
-	for (int i = 0; i < 5; i++)
-	{
-		for (int j = 0; j < 5; j++)
-		{
-			cout << area[i][j] << "  ";
-		}
-		cout << '\n';
-	}
 } // PopulateArrays
+
+//===================== SET VECTOR Y TO ZERO ===================================================
+void SetVectorYtoZero()
+{
+	int numNodesTimesThree = 3 * m_nNumNodes;
+	for (int i = 0; i < numNodesTimesThree; i++) { Y[i] = 0.0; }
+} // SetVectorYtoZero
 
 //================= MATRIX MATRIX ===================================================================
 // COMPUTE ATA = Area^T * Area;
 void MatrixMatrix()
 {
 	int numNodesTimesThree = 3 * m_nNumNodes;
-
-	//----------- dwyerdebug------------------------
-/*	cout << "\n\n-------------------------\nArea matrix \n\n";
-	for (int i = 0; i < numNodesTimesThree; i++) {
-		for (int j = 0; j < numNodesTimesThree; j++) {
-			cout << area[i][j] << "   ";
-		}
-		cout << '\n';
-	}
-	//----------------------------------------------
-*/
 	for (int j = 0; j < numNodesTimesThree; j++) {
 		for (int i = j; i < numNodesTimesThree; i++) {
 			double dotProdSum = 0.0;
@@ -314,6 +393,39 @@ void MatrixMatrix()
 	cout << "\n\n-------------------------\n\n";
 */
 } // MatrixMatrix
+
+//================= MATRIX MATRIX A AT ============================================================
+// COMPUTE ATA = AreaT * AreaT^T;
+void MatrixMatrix_AAT()
+{
+	int numNodesTimesThree = 3 * m_nNumNodes;
+	double* row_i ;
+	double* row_j ;
+
+	for (int j = 0; j < numNodesTimesThree; j++) {
+		row_j = areaT[j];
+		for (int i = j; i < numNodesTimesThree; i++) {
+			row_i = areaT[i];
+			double dotProdSum = 0.0;
+			for (int k = 0; k < numNodesTimesThree; k++) {
+				dotProdSum += row_i[k] * row_j[k];
+			}
+			ATA[i][j] = dotProdSum;
+			ATA[j][i] = dotProdSum;
+		}
+	}
+/*	//----------- dwyerdebug------------------------
+	cout << "\n\n-------------------------\nATA matrix \n\n";
+	for (int i = 0; i < numNodesTimesThree; i++) {
+		for (int j = 0; j < numNodesTimesThree; j++) {
+			cout << ATA[i][j] << "   ";
+		}
+		cout << '\n';
+	}
+	cout << "\n\n-------------------------\n\n";
+*/
+} // MatrixMatrix_AAT
+
 
 //============== MATRIX VECTOR ========================================================
 //  performs  Y = Y + ATA*X
