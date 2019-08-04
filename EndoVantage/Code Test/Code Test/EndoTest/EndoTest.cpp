@@ -67,26 +67,23 @@ int main(int argc, char** argv)
 	// COMPUTE Y = ATA*X
 	cout << "MatrixVector\n";
 	MatrixVector();
-/*
+
 	// PRINT L2 NORM OF Y
+	cout << "Computing Norm\n";
 	double norm = 0;
-	cout << "Y=( ";
 	for (int i = 0; i < 3 * m_nNumNodes; i++)
 	{
-		cout << Y[i] << " ";
 		norm = norm + Y[i] * Y[i];
 	}
-	cout << ")\n";
-	cout << "Squared norm = "<<norm<<'\n';
 	norm = sqrt(norm);
-	cout<< norm <<" L2 Norm\n";
-*/
+
 	//----------------------------------------------------------------------------------------------
 	clock_t total = clock();  // total execution time,in ticks
 	cout << "printf stmts\n";
 //	printf("(%3.5lf) L2 Norm\n", norm);
 //	printf("(%3.5lf seconds) in Total\n", ((float)total) / CLOCKS_PER_SEC);
 	double totalTime = ((double)total) / CLOCKS_PER_SEC; // dwyerdebug
+	cout << norm << " L2 Norm\n";
 	cout << totalTime << " seconds in Total\n";          // dwyerdebug
 
 	cout << "return\n";
@@ -433,11 +430,13 @@ void MatrixVector()
 {
 	int numNodesTimesThree = 3 * m_nNumNodes;
 	double dotProdSum;
+	double* row_i;
 	for (int i = 0; i < numNodesTimesThree; i++)
 	{
 		dotProdSum = 0.0;
+		row_i = ATA[i];
 		for (int k = 0; k < numNodesTimesThree; k++) {
-			dotProdSum = dotProdSum + ATA[i][k] * X[k];
+			dotProdSum = dotProdSum + row_i[k] * X[k];
 		}
 		Y[i] = dotProdSum;
 	}
