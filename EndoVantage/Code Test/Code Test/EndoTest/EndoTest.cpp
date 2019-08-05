@@ -44,13 +44,13 @@ double* Y;
 double** area;
 double** areaT;
 double** ATA;
-double DX_GLOBAL = 10;
+double DX_GLOBAL = 20;
 bool EnablePrintToFile_GLOBAL = false;
 bool EnableDebugConsoleMsg_GLOBAL = true;
 int main(int argc, char** argv)
 {
 	double norm = 0;
-/*	// Setup Model
+	// Setup Model
 	if(EnableDebugConsoleMsg_GLOBAL){cout << "SetupModel\n";}
 	SetupModel();
 
@@ -61,19 +61,19 @@ int main(int argc, char** argv)
 	// POPULATE AREA AND X ARRAYS
 	if(EnableDebugConsoleMsg_GLOBAL){cout << "PopulateArrays\n";}
 	PopulateArrays();
-*/
-	if (EnableDebugConsoleMsg_GLOBAL) { cout << "Debug_MockAreaMatrix\n"; }
+
+//	if (EnableDebugConsoleMsg_GLOBAL) { cout << "Debug_MockAreaMatrix\n"; }
 //	Debug_MockAreaMatrix(200);
-	Debug_MockTransposedAreaMatrix(3200);
+//	Debug_MockTransposedAreaMatrix(3200);
 
 	// MATRIX MULTIPLICATION
 	if (EnableDebugConsoleMsg_GLOBAL) { cout << "MatrixMatrix\n"; }
 //	MatrixMatrix();
-//	MatrixMatrix_AAT();
-	MatrixMatrix_AAT_Parallel();
+	MatrixMatrix_AAT();
+//	MatrixMatrix_AAT_Parallel();
 
 	// COMPUTE Y = ATA*X
-/*	if (EnableDebugConsoleMsg_GLOBAL) { cout << "MatrixVector\n"; }
+	if (EnableDebugConsoleMsg_GLOBAL) { cout << "MatrixVector\n"; }
 	MatrixVector();
 
 	// PRINT L2 NORM OF Y
@@ -83,7 +83,7 @@ int main(int argc, char** argv)
 		norm = norm + Y[i] * Y[i];
 	}
 	norm = sqrt(norm);
-*/
+
 	//----------------------------------------------------------------------------------------------
 	clock_t total = clock();  // total execution time,in ticks
 	if (EnablePrintToFile_GLOBAL) {
@@ -92,6 +92,7 @@ int main(int argc, char** argv)
 	}
 	if(EnableDebugConsoleMsg_GLOBAL){
 		double totalTime = ((double)total) / CLOCKS_PER_SEC; 
+		cout << "L2 Norm: " << norm << '\n';
 		cout << totalTime << " seconds in Total\n";          
 	}
 
