@@ -168,7 +168,7 @@ void SetupModel() {
 
 	//----------------------------------------------------------------------------------
 	// create simple mesh
-	int cnt;
+//	int cnt;
 	int cntByThree = 0;
 	for (int i = 0; i < nx; i++) {
 		nodeXValue = negHalfWidth + i * dx;
