@@ -34,6 +34,7 @@ void MatrixMatrix();
 void MatrixMatrix_AAT();
 void MatrixMatrix_AAT_Parallel();
 void MatrixVector();
+void YplusATtimesAtimesX();
 void SetupModel();
 
 void Debug_MockAreaMatrix(int oneThirdOfSize);
@@ -44,7 +45,7 @@ double* Y;
 double** area;
 double** areaT;
 double** ATA;
-double DX_GLOBAL = 20;
+double DX_GLOBAL = 4;
 bool EnablePrintToFile_GLOBAL = false;
 bool EnableDebugConsoleMsg_GLOBAL = true;
 int main(int argc, char** argv)
@@ -67,7 +68,7 @@ int main(int argc, char** argv)
 //	Debug_MockTransposedAreaMatrix(3200);
 
 	// MATRIX MULTIPLICATION
-	if (EnableDebugConsoleMsg_GLOBAL) { cout << "MatrixMatrix\n"; }
+/*	if (EnableDebugConsoleMsg_GLOBAL) { cout << "MatrixMatrix\n"; }
 //	MatrixMatrix();
 	MatrixMatrix_AAT();
 //	MatrixMatrix_AAT_Parallel();
@@ -75,6 +76,9 @@ int main(int argc, char** argv)
 	// COMPUTE Y = ATA*X
 	if (EnableDebugConsoleMsg_GLOBAL) { cout << "MatrixVector\n"; }
 	MatrixVector();
+*/
+	if (EnableDebugConsoleMsg_GLOBAL) { cout << "YplusATtimesAtimesX\n"; }
+	YplusATtimesAtimesX();
 
 	// PRINT L2 NORM OF Y
 	if (EnableDebugConsoleMsg_GLOBAL) { cout << "Computing Norm\n"; }
@@ -251,24 +255,24 @@ void AllocateArrays()
 	Y = new double[numNodesTimesThree];
 	SetVectorsXandYtoZero();
 	// area is a square 2D array
-//	area = new double* [numNodesTimesThree];
-//	for (int i = 0; i < numNodesTimesThree; ++i)
-//		area[i] = new double[numNodesTimesThree];
-	areaT = new double* [numNodesTimesThree];
+	area = new double* [numNodesTimesThree];
 	for (int i = 0; i < numNodesTimesThree; ++i)
-		areaT[i] = new double[numNodesTimesThree];
+		area[i] = new double[numNodesTimesThree];
+//	areaT = new double* [numNodesTimesThree];
+//	for (int i = 0; i < numNodesTimesThree; ++i)
+//		areaT[i] = new double[numNodesTimesThree];
 
 	// ATA is a square 2D array
-	ATA = new double* [numNodesTimesThree];
-	for (int i = 0; i < numNodesTimesThree; ++i)
-		ATA[i] = new double[numNodesTimesThree];
+//	ATA = new double* [numNodesTimesThree];
+//	for (int i = 0; i < numNodesTimesThree; ++i)
+//		ATA[i] = new double[numNodesTimesThree];
 } // AllocateArrays
 
 //===================== POPULATE ARRAYS ===================================================
 void PopulateArrays()
 {
-//	PopulateAreaArray();
-	PopulateTransposedAreaArray();
+	PopulateAreaArray();
+//	PopulateTransposedAreaArray();
 	PopulateVectorX();
 } // PopulateArrays
 
@@ -450,6 +454,32 @@ void MatrixMatrix_AAT_Parallel()
 	} // for t
 	for_each(threadVector.begin(), threadVector.end(), [](thread& x) {x.join(); });
 } // MatrixMatrix_AAT_Parallel
+
+//============== Y +AT*(A*X) ========================================================
+void YplusATtimesAtimesX()
+{
+	double* tmpVector;
+	int numNodesTimesThree = 3 * m_nNumNodes;
+	tmpVector = new double[numNodesTimesThree];
+	//------------------------------------------------------------------------------
+	// compute tmpVector = A*X
+	for(int i=0; i<numNodesTimesThree;i++)
+	{
+		double sum = 0.0;
+		for (int j = 0; j < numNodesTimesThree; j++){sum += area[i][j] * X[j];}
+		tmpVector[i] = sum;
+	}
+	//------------------------------------------------------------------------------
+	// compute Y + AT*tmpVector
+	for (int i = 0; i < numNodesTimesThree; i++)
+	{
+		double sum = 0.0;
+		for (int j = 0; j < numNodesTimesThree; j++) { sum += area[j][i] * tmpVector[j]; }
+		Y[i] += sum;
+	}
+	//------------------------------------------------------------------------------
+	delete[] tmpVector;
+} // YplusATtimesAtimesX
 
 //============== MATRIX VECTOR ========================================================
 //  performs  Y = Y + ATA*X
