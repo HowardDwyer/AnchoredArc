@@ -2,15 +2,16 @@
 
 class HullGeomType
 {
-private:
+protected:
 	bool fIsVis;
 	double fMinX, fMaxX, fMinY, fMaxY, fMinZ, fMaxZ;
-	bool fBoundingBoxSet;
+	bool fIsBoundingBoxSet;
 	
 	virtual void SetBoundingBox() = 0;
 
 public:
 	HullGeomType();
+	HullGeomType(const HullGeomType & aSource);
 	~HullGeomType();
 
 	bool Visible(){ return fIsVis; }
@@ -18,10 +19,13 @@ public:
 
 	virtual void Draw() = 0;
 
-	double MinX(){ if (!fBoundingBoxSet){ SetBoundingBox(); } return fMinX; }
-	double MaxX(){ if (!fBoundingBoxSet){ SetBoundingBox(); } return fMaxX; }
-	double MinY(){ if (!fBoundingBoxSet){ SetBoundingBox(); } return fMinY; }
-	double MaxY(){ if (!fBoundingBoxSet){ SetBoundingBox(); } return fMaxY; }
-	double MinZ(){ if (!fBoundingBoxSet){ SetBoundingBox(); } return fMinZ; }
-	double MaxZ(){ if (!fBoundingBoxSet){ SetBoundingBox(); } return fMaxZ; }
+	double MinX(){ if (!fIsBoundingBoxSet){ SetBoundingBox(); } return fMinX; }
+	double MaxX(){ if (!fIsBoundingBoxSet){ SetBoundingBox(); } return fMaxX; }
+	double MinY(){ if (!fIsBoundingBoxSet){ SetBoundingBox(); } return fMinY; }
+	double MaxY(){ if (!fIsBoundingBoxSet){ SetBoundingBox(); } return fMaxY; }
+	double MinZ(){ if (!fIsBoundingBoxSet){ SetBoundingBox(); } return fMinZ; }
+	double MaxZ(){ if (!fIsBoundingBoxSet){ SetBoundingBox(); } return fMaxZ; }
+
+	double Diagonal();
+
 }; // class HullGeomType
