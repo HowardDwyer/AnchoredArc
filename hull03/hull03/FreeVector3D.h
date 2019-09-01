@@ -1,4 +1,6 @@
 #pragma once
+#include "TransfMatrix3D.h"
+
 class FreeVector3D
 {
 private:
@@ -31,10 +33,11 @@ public:
 	bool IsParallelTo(FreeVector3D aV);
 	bool IsOrthogonalTo(FreeVector3D aV);
 
+	void TransformBy(TransfMatrix3D aM);
+
 	FreeVector3D operator + (const FreeVector3D &aV);
 	FreeVector3D operator - (const FreeVector3D &aV);
 	double operator * (const FreeVector3D &aV);
 	void operator *= (const double aScale);
-
 };
 

@@ -12,16 +12,18 @@ public:
 	TransfMatrix3D();
 	TransfMatrix3D(TransfMatrix3D & aSource);
 	~TransfMatrix3D();
+	
+	double At(const int aRow, const int aCol);
 
 	void SetToIdentity();
 	void SetToTranslationMatrix(const double aDx, const double aDy, const double aDz);
 	void SetToRotationMatrix_XY(const double aAngle);
 	void SetToRotationMatrix_YZ(const double aAngle);
 	void SetToRotationMatrix_ZX(const double aAngle);
-
 	void CopyFrom(const TransfMatrix3D aSource);
+	bool Invert();
+
 	TransfMatrix3D MatrixMatrixMultiply(const TransfMatrix3D aMatrix);
 
-	bool Invert();
 }; // class TransfMatrix3D
 

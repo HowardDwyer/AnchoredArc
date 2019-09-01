@@ -47,6 +47,20 @@ void Point3D::Draw()
 } // Point3D::Draw
 
 //===================================================================================
+void Point3D::TransformBy(TransfMatrix3D aM)
+{
+	double temp[3];
+	for (int i = 0; i < 3; i++){ temp[i] = fCoord[i]; }
+	for (int i = 0; i < 3; i++)
+	{ 
+		fCoord[i] = aM.At(i,3);
+		for (int k = 0; k < 3; k++)
+		{
+			fCoord[i] += aM.At(i, k) * temp[k];
+		} // loop to compute the ot product
+	}// loop through the coord in the point
+} // Point3D::TransformBy
+
 //===================================================================================
 //===================================================================================
 //===================================================================================

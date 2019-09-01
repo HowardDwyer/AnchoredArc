@@ -1,5 +1,7 @@
 #pragma once
 #include "HullGeomType.h"
+#include "TransfMatrix3D.h"
+
 class Point3D :	public HullGeomType
 {
 private:
@@ -21,5 +23,8 @@ public:
 	double SetX(const double aX){ fCoord[0] = aX; SetBoundingBox(); }
 	double SetY(const double aY){ fCoord[1] = aY; SetBoundingBox(); }
 	double SetZ(const double aZ){ fCoord[2] = aZ; SetBoundingBox(); }
+
+	virtual void TransformBy(TransfMatrix3D aM);
+
 }; // class Point3D
 

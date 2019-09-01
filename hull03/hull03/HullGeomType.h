@@ -1,4 +1,5 @@
 #pragma once
+#include "TransfMatrix3D.h"
 
 class HullGeomType
 {
@@ -27,5 +28,7 @@ public:
 	double MaxZ(){ if (!fIsBoundingBoxSet){ SetBoundingBox(); } return fMaxZ; }
 
 	double Diagonal();
+
+	virtual void TransformBy(const TransfMatrix3D aM) = 0;
 
 }; // class HullGeomType

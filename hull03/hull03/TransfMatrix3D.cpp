@@ -27,6 +27,17 @@ TransfMatrix3D::TransfMatrix3D(TransfMatrix3D & aSource)
 } // TransfMatrix3D::TransfMatrix3D
 
 //========================================================================================
+double TransfMatrix3D::At(const int aRow, const int aCol)
+{
+	double result = 0.0;
+	if ((0 <= aRow) && (aRow <= 3) && (0 <= aCol) && (aCol <= 3))
+	{
+		result = fM[aRow][aCol];
+	}
+	return result;
+} // TransfMatrix3D::At
+
+//========================================================================================
 void TransfMatrix3D::CopyFrom(const TransfMatrix3D aSource)
 {
 	for (int i = 0; i < 4; i++)

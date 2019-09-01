@@ -176,5 +176,19 @@ bool FreeVector3D::IsOrthogonalTo(FreeVector3D aV)
 } // FreeVector3D::IsOrthogonalTo
 
 //==========================================================================================
+void FreeVector3D::TransformBy(TransfMatrix3D aM)
+{
+	double temp[3];
+	for (int i = 0; i < 3; i++){ temp[i] = fCoord[i]; }
+	for (int i = 0; i < 3; i++)
+	{
+		fCoord[i] = 0.0; // free vectors are not translated.
+		for (int k = 0; k < 3; k++)
+		{
+			fCoord[i] += aM.At(i, k) * temp[k];
+		} // loop to compute the ot product
+	}// loop through the coord in the point
+} // FreeVector3D::TransformBy
+
 //==========================================================================================
 //==========================================================================================
