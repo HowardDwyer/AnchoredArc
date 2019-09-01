@@ -47,16 +47,16 @@ double FreeVector3D::Length()
 //==========================================================================================
 bool FreeVector3D::Normalize()
 {
-	double lLength = Length();
-	if (lLength > 0.0)
+	double length = Length();
+	if (length > 0.0)
 	{
-		fCoord[0] /= lLength;
-		fCoord[1] /= lLength;
-		fCoord[2] /= lLength;
+		fCoord[0] /= length;
+		fCoord[1] /= length;
+		fCoord[2] /= length;
 		fLength = 1.0;
 		fIsLengthComputed = true;
 	}
-	return (lLength > 0.0);
+	return (length > 0.0);
 } // FreeVector3D::Normalize
 
 //==========================================================================================
@@ -84,11 +84,7 @@ FreeVector3D FreeVector3D::operator - (const FreeVector3D &aV)
 //==========================================================================================
 double FreeVector3D::operator * (const FreeVector3D &aV)
 {
-	double lDot = 0.0;
-	lDot += this->fCoord[0] * aV.fCoord[0];
-	lDot += this->fCoord[1] * aV.fCoord[1];
-	lDot += this->fCoord[2] * aV.fCoord[2];
-	return lDot;
+	return this->Dot(aV);
 } // FreeVector3D::operator -
 
 //==========================================================================================
@@ -103,22 +99,22 @@ void FreeVector3D::operator *= (const double aScale)
 //==========================================================================================
 double FreeVector3D::Dot(const FreeVector3D &aV)
 {
-	double lDot = 0.0;
-	lDot += this->fCoord[0] * aV.fCoord[0];
-	lDot += this->fCoord[1] * aV.fCoord[1];
-	lDot += this->fCoord[2] * aV.fCoord[2];
-	return lDot;
+	double dot = 0.0;
+	dot += this->fCoord[0] * aV.fCoord[0];
+	dot += this->fCoord[1] * aV.fCoord[1];
+	dot += this->fCoord[2] * aV.fCoord[2];
+	return dot;
 } // FreeVector3D::operator -
 
 //==========================================================================================
 FreeVector3D FreeVector3D::Cross(const FreeVector3D &aV)
 {
-	FreeVector3D lCrossProd;
-	lCrossProd.fCoord[0] = this->fCoord[1] * aV.fCoord[2] - this->fCoord[2] * aV.fCoord[1];
-	lCrossProd.fCoord[0] = -(this->fCoord[0] * aV.fCoord[2] - this->fCoord[2] * aV.fCoord[0]);
-	lCrossProd.fCoord[0] = this->fCoord[0] * aV.fCoord[1] - this->fCoord[1] * aV.fCoord[0];
-	lCrossProd.fIsLengthComputed = false;
-	return lCrossProd;
+	FreeVector3D crossProd;
+	crossProd.fCoord[0] = this->fCoord[1] * aV.fCoord[2] - this->fCoord[2] * aV.fCoord[1];
+	crossProd.fCoord[0] = -(this->fCoord[0] * aV.fCoord[2] - this->fCoord[2] * aV.fCoord[0]);
+	crossProd.fCoord[0] = this->fCoord[0] * aV.fCoord[1] - this->fCoord[1] * aV.fCoord[0];
+	crossProd.fIsLengthComputed = false;
+	return crossProd;
 } // FreeVector3D::Cross
 
 //==========================================================================================
@@ -148,17 +144,17 @@ void FreeVector3D::SetToZero()
 //==========================================================================================
 bool FreeVector3D::IsParallelTo(FreeVector3D aV)
 {
-	bool lResult = true;
-	if (IsExactlyZero()){lResult = true;}
-	else if (aV.IsExactlyZero()){lResult = true;}
+	bool result = true;
+	if (IsExactlyZero()){result = true;}
+	else if (aV.IsExactlyZero()){result = true;}
 	else
 	{
-		double lDot = Dot(aV);
-		double lLength_This = Length();
-		double lLength_V = aV.Length();
-		lResult = (abs(lDot) >= lLength_This * lLength_V * HullConst::COSANGLETOL());
+		double dot = Dot(aV);
+		double length_This = Length();
+		double length_V = aV.Length();
+		result = (abs(dot) >= length_This * length_V * HullConst::COSANGLETOL());
 	} // neither of the vectors is zero
-	return lResult;
+	return result;
 } // FreeVector3D::IsParallelTo
 
 //==========================================================================================
@@ -166,17 +162,17 @@ bool FreeVector3D::IsParallelTo(FreeVector3D aV)
 //==========================================================================================
 bool FreeVector3D::IsOrthogonalTo(FreeVector3D aV)
 {
-	bool lResult = true;
-	if (IsExactlyZero()){ lResult = true; }
-	else if (aV.IsExactlyZero()){ lResult = true; }
+	bool result = true;
+	if (IsExactlyZero()){ result = true; }
+	else if (aV.IsExactlyZero()){ result = true; }
 	else
 	{
-		double lDot = Dot(aV);
-		double lLength_This = Length();
-		double lLength_V = aV.Length();
-		lResult = (abs(lDot) <= lLength_This * lLength_V * HullConst::SINANGLETOL());
+		double dot = Dot(aV);
+		double length_This = Length();
+		double length_V = aV.Length();
+		result = (abs(dot) <= length_This * length_V * HullConst::SINANGLETOL());
 	} // neither of the vectors is zero
-	return lResult;
+	return result;
 } // FreeVector3D::IsOrthogonalTo
 
 //==========================================================================================
