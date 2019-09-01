@@ -1,8 +1,12 @@
 #pragma once
+
 class TransfMatrix3D
 {
 private:
 	double fM[4][4];
+	void SwapRows(const int aRow1, const int aRow2);
+	void DivideRowBy(const int aRow1, const double aDivisor);
+	void AddMultipleOfRow(const int aRow1, const double aMultiplier, const int aRow2);
 
 public:
 	TransfMatrix3D();
@@ -15,6 +19,9 @@ public:
 	void SetToRotationMatrix_YZ(const double aAngle);
 	void SetToRotationMatrix_ZX(const double aAngle);
 
+	void CopyFrom(const TransfMatrix3D aSource);
 	TransfMatrix3D MatrixMatrixMultiply(const TransfMatrix3D aMatrix);
+
+	bool Invert();
 }; // class TransfMatrix3D
 
