@@ -12,7 +12,7 @@ protected:
 public:
 	Point3D();
 	Point3D(const double aX, const double aY, const double aZ);
-	Point3D(const Point3D & aSource);
+	Point3D(Point3D & aSource);
 	~Point3D();
 
 	virtual void Draw();
@@ -23,8 +23,9 @@ public:
 	double SetX(const double aX){ fCoord[0] = aX; SetBoundingBox(); }
 	double SetY(const double aY){ fCoord[1] = aY; SetBoundingBox(); }
 	double SetZ(const double aZ){ fCoord[2] = aZ; SetBoundingBox(); }
-
-	virtual void TransformBy(TransfMatrix3D aM);
+	void SetToZero(){ fCoord[0] = fCoord[1] = fCoord[2] = 0.0; SetBoundingBox(); }
+	void SetToPoint(Point3D &aSource);
+	virtual void TransformBy(TransfMatrix3D &aM);
 
 }; // class Point3D
 

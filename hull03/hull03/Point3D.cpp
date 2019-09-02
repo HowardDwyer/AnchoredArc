@@ -4,9 +4,7 @@
 //===================================================================================
 Point3D::Point3D()
 {
-	fCoord[0] = 0.0;
-	fCoord[1] = 0.0;
-	fCoord[2] = 0.0;
+	SetToZero();
 } // Point3D::Point3D
 
 //===================================================================================
@@ -19,17 +17,27 @@ Point3D::Point3D(const double aX, const double aY, const double aZ)
 } // Point3D::Point3D
 
 //===================================================================================
-Point3D::Point3D(const Point3D & aSource): HullGeomType(aSource)
+Point3D::Point3D(Point3D &aSource): HullGeomType(aSource)
 {
 	fCoord[0] = aSource.fCoord[0];
 	fCoord[1] = aSource.fCoord[1];
 	fCoord[2] = aSource.fCoord[2];
+	SetBoundingBox();
 } // Point3D::Point3D
 
 //===================================================================================
 Point3D::~Point3D()
 {
 }
+
+//===================================================================================
+void Point3D::SetToPoint(Point3D &aSource)
+{
+	fCoord[0] = aSource.fCoord[0];
+	fCoord[1] = aSource.fCoord[1];
+	fCoord[2] = aSource.fCoord[2];
+	SetBoundingBox();
+} // Point3D::SetToPoint
 
 //===================================================================================
 void Point3D::SetBoundingBox()
@@ -47,7 +55,7 @@ void Point3D::Draw()
 } // Point3D::Draw
 
 //===================================================================================
-void Point3D::TransformBy(TransfMatrix3D aM)
+void Point3D::TransformBy(TransfMatrix3D &aM)
 {
 	double temp[3];
 	for (int i = 0; i < 3; i++){ temp[i] = fCoord[i]; }
@@ -59,9 +67,7 @@ void Point3D::TransformBy(TransfMatrix3D aM)
 			fCoord[i] += aM.At(i, k) * temp[k];
 		} // loop to compute the ot product
 	}// loop through the coord in the point
+	SetBoundingBox();
 } // Point3D::TransformBy
 
-//===================================================================================
-//===================================================================================
-//===================================================================================
 //===================================================================================

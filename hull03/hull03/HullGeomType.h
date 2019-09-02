@@ -29,6 +29,6 @@ public:
 
 	double Diagonal();
 
-	virtual void TransformBy(const TransfMatrix3D aM) = 0;
+	virtual void TransformBy(TransfMatrix3D &aM) = 0;
 
 }; // class HullGeomType
