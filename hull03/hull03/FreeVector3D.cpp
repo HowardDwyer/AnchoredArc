@@ -21,13 +21,19 @@ FreeVector3D::FreeVector3D(const double aX, const double aY, const double aZ)
 } // FreeVector3D::FreeVector3D
 
 //==========================================================================================
+FreeVector3D::FreeVector3D(Point3D &aFromPt, Point3D &aToPt)
+{
+	fCoord[0] = (aToPt.X() - aFromPt.X());
+	fCoord[1] = (aToPt.Y() - aFromPt.Y());
+	fCoord[2] = (aToPt.Z() - aFromPt.Z());
+	fLength = 0.0;
+	fIsLengthComputed = false;
+}
+
+//==========================================================================================
 FreeVector3D::FreeVector3D(FreeVector3D &aSource)
 {
-	fCoord[0] = aSource.fCoord[0];
-	fCoord[1] = aSource.fCoord[1];
-	fCoord[2] = aSource.fCoord[2];
-	fLength = aSource.fLength;
-	fIsLengthComputed = aSource.fIsLengthComputed;
+	SetToVector(aSource);
 } // FreeVector3D::FreeVector3D
 
 //==========================================================================================
@@ -78,7 +84,7 @@ void FreeVector3D::SetToVector(FreeVector3D &aSource)
 bool FreeVector3D::Normalize()
 {
 	double length = Length();
-	if (length > 0.0)
+	if ((length > 0.0) && (length != 1.0))
 	{
 		fCoord[0] /= length;
 		fCoord[1] /= length;

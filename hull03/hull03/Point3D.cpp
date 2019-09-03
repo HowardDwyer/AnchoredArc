@@ -49,12 +49,6 @@ void Point3D::SetBoundingBox()
 }// Point3D::SetBoundingBox
 
 //===================================================================================
-void Point3D::Draw()
-{
-	// TODO
-} // Point3D::Draw
-
-//===================================================================================
 void Point3D::TransformBy(TransfMatrix3D &aM)
 {
 	double temp[3];

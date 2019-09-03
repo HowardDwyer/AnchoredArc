@@ -1,5 +1,7 @@
 #pragma once
 #include "TransfMatrix3D.h"
+#include "Point3D.h"
+
 
 class FreeVector3D
 {
@@ -10,6 +12,8 @@ private:
 public:
 	FreeVector3D();
 	FreeVector3D(const double aX, const double aY, const double aZ);
+	FreeVector3D(Point3D &aFromPt, Point3D &aToPt);
+
 	FreeVector3D(FreeVector3D &aSource);
 	~FreeVector3D();
 
