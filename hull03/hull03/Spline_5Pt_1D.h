@@ -19,7 +19,6 @@ private:
 	double fCoeffC[5];
 	double fCoeffD[5];
 
-	void Reset();
 	void FindMinMax();
 public:
 	Spline_5Pt_1D();
@@ -28,7 +27,8 @@ public:
 
 	~Spline_5Pt_1D();
 
-	void ConstructCoefficients(const double aP0, const double aP1, const double aP2, 
+	void Reset();
+	void ConstructCoefficients(const double aP0, const double aP1, const double aP2,
 		const double aP3, const double aP4);
 
 	double P(const double aT);
@@ -36,5 +36,8 @@ public:
 	double MinValue();
 	double MaxValue();
 	bool FindFirst(const double aTarget, double* aT);
+
+	bool Defined(){ return fIsDefined; }
+	bool ExtentsComputed(){ return fExtentsComputed; }
 }; // class Spline_5Pt_1D
 
