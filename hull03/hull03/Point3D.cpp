@@ -4,12 +4,18 @@
 //===================================================================================
 Point3D::Point3D()
 {
+	fIsVis = true;
+	fIsBoundingBoxSet = false;
+	fMinX = fMaxX = fMinY = fMaxY = fMinZ = fMaxZ = 0.0;
 	SetToZero();
 } // Point3D::Point3D
 
 //===================================================================================
 Point3D::Point3D(const double aX, const double aY, const double aZ)
 {
+	fIsVis = true;
+	fIsBoundingBoxSet = false;
+	fMinX = fMaxX = fMinY = fMaxY = fMinZ = fMaxZ = 0.0;
 	fCoord[0] = aX;
 	fCoord[1] = aY;
 	fCoord[2] = aZ;
@@ -19,6 +25,9 @@ Point3D::Point3D(const double aX, const double aY, const double aZ)
 //===================================================================================
 Point3D::Point3D(Point3D &aSource): HullGeomType(aSource)
 {
+	fIsVis = true;
+	fIsBoundingBoxSet = false;
+	fMinX = fMaxX = fMinY = fMaxY = fMinZ = fMaxZ = 0.0;
 	fCoord[0] = aSource.fCoord[0];
 	fCoord[1] = aSource.fCoord[1];
 	fCoord[2] = aSource.fCoord[2];
