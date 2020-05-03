@@ -20,7 +20,12 @@ protected:
 public:
 	Spline_5Pt_3D();
 
-	Spline_5Pt_3D(Point3D aP0, Point3D aP1, Point3D aP2, Point3D aP3, Point3D aP4);
+	Spline_5Pt_3D(
+		Point3D aP0, 
+		Point3D aP1, 
+		Point3D aP2, 
+		Point3D aP3, 
+		Point3D aP4);
 
 	~Spline_5Pt_3D();
 
@@ -28,14 +33,34 @@ public:
 	virtual void TransformBy(TransfMatrix3D &aM);
 
 	void Reset();
-	void SetNodePoints(Point3D aP0, Point3D aP1, Point3D aP2, Point3D aP3, Point3D aP4);
+	
+	void SetNodePoints(
+		Point3D aP0, 
+		Point3D aP1, 
+		Point3D aP2, 
+		Point3D aP3, 
+		Point3D aP4);
+	
 	void ConstructCoefficients();
 
 	Point3D P(const double aT);
+	
 	bool Defined();
-	bool FindFirstX(const double aTarget, double* aT){ return fSpline_X.FindFirst(aTarget, aT); }
-	bool FindFirstY(const double aTarget, double* aT){ return fSpline_Y.FindFirst(aTarget, aT); }
-	bool FindFirstZ(const double aTarget, double* aT){ return fSpline_Z.FindFirst(aTarget, aT); }
+	
+	bool FindFirstX(const double aTarget, double* aT)
+	{ 
+		return fSpline_X.FindFirst(aTarget, aT); 
+	}
+
+	bool FindFirstY(const double aTarget, double* aT)
+	{
+		return fSpline_Y.FindFirst(aTarget, aT); 
+	}
+
+	bool FindFirstZ(const double aTarget, double* aT)
+	{
+		return fSpline_Z.FindFirst(aTarget, aT);
+	}
 
 }; // class Spline_5Pt_3D
 

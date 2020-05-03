@@ -3,11 +3,9 @@
 
 
 //===========================================================================================
-Spline_5Pt_3D::Spline_5Pt_3D()
+Spline_5Pt_3D::Spline_5Pt_3D() 
+	: HullGeomType()
 {
-	fIsVis = true;
-	fIsBoundingBoxSet = false;
-	fMinX = fMaxX = fMinY = fMaxY = fMinZ = fMaxZ = 0.0;
 } // Spline_5Pt_3D::Spline_5Pt_3D
 
 //===========================================================================================
@@ -16,12 +14,9 @@ Spline_5Pt_3D::Spline_5Pt_3D(
 		Point3D aP1, 
 		Point3D aP2,
 		Point3D aP3, 
-		Point3D aP4)
+		Point3D aP4) 
+	: HullGeomType()
 {
-	fIsVis = true;
-	fIsBoundingBoxSet = false;
-	fMinX = fMaxX = fMinY = fMaxY = fMinZ = fMaxZ = 0.0;
-
 	SetNodePoints(aP0, aP1, aP2, aP3, aP4);
 } // Spline_5Pt_3D::Spline_5Pt_3D
 

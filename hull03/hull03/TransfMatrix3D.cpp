@@ -121,7 +121,7 @@ TransfMatrix3D TransfMatrix3D::MatrixMatrixMultiply(const TransfMatrix3D aMatrix
 			{
 				result.fM[i][j] += fM[i][k] * aMatrix.fM[k][j];
 			} // loop to compute the dot product
-		}// loop through cols of the result
+		} // loop through cols of the result
 	}  // loop through rows of the result
 	return result;
 } // TransfMatrix3D::MatrixMatrixMultiply

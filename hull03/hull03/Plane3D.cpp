@@ -17,13 +17,19 @@ void Plane3D::SetUsingPtAndNormal(Point3D &aPointOnPlane, FreeVector3D &aNormalV
 } // Plane3D::SetUsingPtAndNormal
 
 //===============================================================================
-Plane3D::Plane3D(Point3D &aPt1, Point3D &aPt2, Point3D &aPt3)
+Plane3D::Plane3D(
+	Point3D &aPt1, 
+	Point3D &aPt2, 
+	Point3D &aPt3)
 {
 	SetUsingThreePts(aPt1, aPt2, aPt3);
 } // Plane3D::Plane3D
 
 //===============================================================================
-void Plane3D::SetUsingThreePts(Point3D &aPt1, Point3D &aPt2, Point3D &aPt3)
+void Plane3D::SetUsingThreePts(
+	Point3D &aPt1, 
+	Point3D &aPt2, 
+	Point3D &aPt3)
 {
 	FreeVector3D edge12(aPt1, aPt2);
 	FreeVector3D edge13(aPt1, aPt3);

@@ -111,11 +111,13 @@ double Spline_5Pt_1D::P(const double aT)
 			// extrapolate before the first spline point 
 			returnValue = fCoeffA[0] + fCoeffB[0] * aT;
 		} // if T < 0
+
 		else if (aT > 4.0)
 		{
 			// extrapolate after the last spline point
 			returnValue = fCoeffA[4] + (fCoeffB[3] + 2.0*fCoeffC[3] + 3.0*fCoeffD[3]) * (aT - 4.0);
 		} // if T > 4
+		
 		else
 		{
 			// 0 <= T <= 4
@@ -124,21 +126,25 @@ double Spline_5Pt_1D::P(const double aT)
 				segment = 0;
 				deltaT = aT - 0.0;
 			}
+		
 			else if ((1.0 <= aT) && (aT < 2.0))
 			{
 				segment = 1;
 				deltaT = aT - 1.0;
 			}
+			
 			else if ((2.0 <= aT) && (aT < 3.0))
 			{
 				segment = 2;
 				deltaT = aT - 2.0;
 			}
+			
 			else if ((3.0 <= aT) && (aT < 4.0))
 			{
 				segment = 3;
 				deltaT = aT - 3.0;
 			}
+			
 			// evaluate the cubic poly using Horner's method.
 			returnValue = ((fCoeffD[segment] * deltaT + fCoeffC[segment]) * deltaT 
 				+ fCoeffB[segment]) * deltaT + fCoeffA[segment];
@@ -158,6 +164,7 @@ void Spline_5Pt_1D::FindMinMax()
 		fMinValue = 0.0;
 		fMaxValue = 0.0;
 	} // if the spline is not defined
+
 	else
 	{
 		double dT = 4.0 / HullConst::NUMSEARCHSTEPS;
@@ -171,6 +178,7 @@ void Spline_5Pt_1D::FindMinMax()
 			{
 				fMinValue = thisValue;
 			}
+	
 			else if (thisValue > fMaxValue)
 			{
 				fMaxValue = thisValue;
@@ -182,14 +190,20 @@ void Spline_5Pt_1D::FindMinMax()
 //====================================================================================
 double Spline_5Pt_1D::MinValue()
 {
-	if (!fExtentsComputed){ FindMinMax(); }
+	if (!fExtentsComputed)
+	{
+		FindMinMax(); 
+	}
 	return fMinValue;
 } // Spline_5Pt_1D::MinValue
 
 //====================================================================================
 double Spline_5Pt_1D::MaxValue()
 {
-	if (!fExtentsComputed){ FindMinMax(); }
+	if (!fExtentsComputed)
+	{
+		FindMinMax();
+	}
 	return fMaxValue;
 } // Spline_5Pt_1D::MaxValue
 
@@ -211,6 +225,7 @@ bool Spline_5Pt_1D::FindFirst(const double aTarget, double* aT)
 			*aT = thisT;
 			return true;
 		} // if this value is (approx) equal to the target
+	
 		else if (thisValue < aTarget)
 		{
 			if (foundLowT) 
@@ -230,6 +245,7 @@ bool Spline_5Pt_1D::FindFirst(const double aTarget, double* aT)
 				foundLowT = true;
 			}
 		} // if this value is less than the target
+		
 		else if (thisValue > aTarget)
 		{
 			if (foundHighT)
@@ -263,11 +279,13 @@ bool Spline_5Pt_1D::FindFirst(const double aTarget, double* aT)
 				*aT = thisT;
 				return true;
 			} // if this value is (approx) equal to the target
+		
 			else if (thisValue < aTarget)
 			{
 				lowT = thisT;
 				lowValue = thisValue;
 			} // if this value is less than the target
+			
 			else if (thisValue > aTarget)
 			{
 				highT = thisT;

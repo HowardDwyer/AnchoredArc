@@ -2,20 +2,19 @@
 #include "Point3D.h"
 
 //===================================================================================
-Point3D::Point3D()
+Point3D::Point3D() 
+	: HullGeomType()
 {
-	fIsVis = true;
-	fIsBoundingBoxSet = false;
-	fMinX = fMaxX = fMinY = fMaxY = fMinZ = fMaxZ = 0.0;
 	SetToZero();
 } // Point3D::Point3D
 
 //===================================================================================
-Point3D::Point3D(const double aX, const double aY, const double aZ)
+Point3D::Point3D(
+	const double aX, 
+	const double aY, 
+	const double aZ) 
+	: HullGeomType()
 {
-	fIsVis = true;
-	fIsBoundingBoxSet = false;
-	fMinX = fMaxX = fMinY = fMaxY = fMinZ = fMaxZ = 0.0;
 	fCoord[0] = aX;
 	fCoord[1] = aY;
 	fCoord[2] = aZ;
@@ -23,11 +22,9 @@ Point3D::Point3D(const double aX, const double aY, const double aZ)
 } // Point3D::Point3D
 
 //===================================================================================
-Point3D::Point3D(Point3D &aSource): HullGeomType(aSource)
+Point3D::Point3D(Point3D &aSource) 
+	: HullGeomType(aSource)
 {
-	fIsVis = true;
-	fIsBoundingBoxSet = false;
-	fMinX = fMaxX = fMinY = fMaxY = fMinZ = fMaxZ = 0.0;
 	fCoord[0] = aSource.fCoord[0];
 	fCoord[1] = aSource.fCoord[1];
 	fCoord[2] = aSource.fCoord[2];
@@ -61,7 +58,11 @@ void Point3D::SetBoundingBox()
 void Point3D::TransformBy(TransfMatrix3D &aM)
 {
 	double temp[3];
-	for (int i = 0; i < 3; i++){ temp[i] = fCoord[i]; }
+	for (int i = 0; i < 3; i++)
+	{ 
+		temp[i] = fCoord[i]; 
+	}
+
 	for (int i = 0; i < 3; i++)
 	{ 
 		fCoord[i] = aM.At(i,3);

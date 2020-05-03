@@ -23,15 +23,58 @@ public:
 	virtual void SetBoundingBox();
 	virtual void Draw(){ /* TODO*/ }
 
-	void Normalize(){ fDirVector.Normalize(); }
-	void SetToZero(){ fBasePt.SetToZero(); fDirVector.SetToZero(); }
-	void SetVector(FreeVector3D &aSourceVec){ fDirVector.SetToVector(aSourceVec); }
-	void SetToBoundVector(BoundVector3D &aSource){ fBasePt.SetToPoint(aSource.fBasePt); fDirVector.SetToVector(aSource.fDirVector); }
-	void SetBase(Point3D &aSourcePt){ fBasePt.SetToPoint(aSourcePt); }
-	void SetLength(const double aNewLength){ fDirVector.Setlength(aNewLength); }
-	void TransformBy(TransfMatrix3D &aM){ fBasePt.TransformBy(aM); fDirVector.TransformBy(aM); }
-	double Length(){ return fDirVector.Length(); }
-	bool IsExactlyZero(){ return fDirVector.IsExactlyZero(); }
-	bool IsApproxZero(){ return fDirVector.IsApproxZero(); }
+	void Normalize()
+	{ 
+		fDirVector.Normalize(); 
+	}
+
+	void SetToZero()
+	{
+		fBasePt.SetToZero(); 
+		fDirVector.SetToZero(); 
+	}
+
+	void SetVector(FreeVector3D &aSourceVec)
+	{ 
+		fDirVector.SetToVector(aSourceVec); 
+	}
+
+	void SetToBoundVector(BoundVector3D &aSource)
+	{ 
+		fBasePt.SetToPoint(aSource.fBasePt); 
+		fDirVector.SetToVector(aSource.fDirVector); 
+	}
+
+	void SetBase(Point3D &aSourcePt)
+	{ 
+		fBasePt.SetToPoint(aSourcePt); 
+	}
+
+	void SetLength(const double aNewLength)
+	{ 
+		fDirVector.Setlength(aNewLength); 
+	}
+
+	void TransformBy(TransfMatrix3D &aM)
+	{ 
+		fBasePt.TransformBy(aM); 
+		fDirVector.TransformBy(aM); 
+	}
+
+	double Length()
+	{ 
+		return fDirVector.Length(); 
+	}
+	
+	bool IsExactlyZero()
+	{ 
+		return fDirVector.IsExactlyZero(); 
+	}
+	
+	bool IsApproxZero()
+	{ 
+		return fDirVector.IsApproxZero(); 
+	}
+
 
 }; // class BoundVector3D

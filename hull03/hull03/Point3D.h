@@ -20,10 +20,30 @@ public:
 	double Y(){ return fCoord[1]; }
 	double Z(){ return fCoord[2]; }
 
-	void SetX(const double aX){ fCoord[0] = aX; SetBoundingBox(); }
-	void SetY(const double aY){ fCoord[1] = aY; SetBoundingBox(); }
-	void SetZ(const double aZ){ fCoord[2] = aZ; SetBoundingBox(); }
-	void SetToZero(){ fCoord[0] = fCoord[1] = fCoord[2] = 0.0; SetBoundingBox(); }
+	void SetX(const double aX)
+	{
+		fCoord[0] = aX;
+		SetBoundingBox(); 
+	}
+
+	void SetY(const double aY)
+	{
+		fCoord[1] = aY; 
+		SetBoundingBox(); 
+	}
+
+	void SetZ(const double aZ)
+	{
+		fCoord[2] = aZ;
+		SetBoundingBox();
+	}
+	
+	void SetToZero()
+	{
+		fCoord[0] = fCoord[1] = fCoord[2] = 0.0; 
+		SetBoundingBox(); 
+	}
+	
 	void SetToPoint(Point3D &aSource);
 	virtual void TransformBy(TransfMatrix3D &aM);
 

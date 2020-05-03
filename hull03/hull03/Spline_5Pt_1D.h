@@ -22,14 +22,24 @@ private:
 	void FindMinMax();
 public:
 	Spline_5Pt_1D();
-	Spline_5Pt_1D(const double aP0, const double aP1, const double aP2,
-		const double aP3, const double aP4);
+	
+	Spline_5Pt_1D(
+		const double aP0, 
+		const double aP1, 
+		const double aP2,
+		const double aP3, 
+		const double aP4);
 
 	~Spline_5Pt_1D();
 
 	void Reset();
-	void ConstructCoefficients(const double aP0, const double aP1, const double aP2,
-		const double aP3, const double aP4);
+	
+	void ConstructCoefficients(
+		const double aP0, 
+		const double aP1, 
+		const double aP2,
+		const double aP3, 
+		const double aP4);
 
 	double P(const double aT);
 
@@ -37,7 +47,15 @@ public:
 	double MaxValue();
 	bool FindFirst(const double aTarget, double* aT);
 
-	bool Defined(){ return fIsDefined; }
-	bool ExtentsComputed(){ return fExtentsComputed; }
+	bool Defined()
+	{ 
+		return fIsDefined; 
+	}
+
+	bool ExtentsComputed()
+	{
+		return fExtentsComputed; 
+	}
+
 }; // class Spline_5Pt_1D
 

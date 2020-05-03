@@ -25,18 +25,39 @@ public:
 	double X(){ return fCoord[0]; }
 	double Y(){ return fCoord[1]; }
 	double Z(){ return fCoord[2]; }
-	void SetX(const double aX){ fCoord[0] = aX; fIsLengthComputed = false; }
-	void SetY(const double aY){ fCoord[1] = aY; fIsLengthComputed = false; }
-	void SetZ(const double aZ){ fCoord[2] = aZ; fIsLengthComputed = false; }
+
+	void SetX(const double aX)
+	{ 
+		fCoord[0] = aX; 
+		fIsLengthComputed = false; 
+	}
+
+	void SetY(const double aY)
+	{ 
+		fCoord[1] = aY; 
+		fIsLengthComputed = false; 
+	}
+
+	void SetZ(const double aZ)
+	{ 
+		fCoord[2] = aZ; 
+		fIsLengthComputed = false; 
+	}
+
 	void SetToVector(FreeVector3D &aSource);
+	
 	double Length();
+	
 	void Setlength(const double aNewLength);
+	
 	void Scale(const double aScale);
 
 	double Dot(FreeVector3D &aV);
+	
 	FreeVector3D Cross(FreeVector3D &aV);
 
 	bool IsParallelTo(FreeVector3D &aV);
+	
 	bool IsOrthogonalTo(FreeVector3D &aV);
 
 	void TransformBy(TransfMatrix3D &aM);

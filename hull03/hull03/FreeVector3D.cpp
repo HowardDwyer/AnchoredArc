@@ -11,7 +11,10 @@ FreeVector3D::FreeVector3D()
 } // FreeVector3D::FreeVector3D()
 
 //==========================================================================================
-FreeVector3D::FreeVector3D(const double aX, const double aY, const double aZ)
+FreeVector3D::FreeVector3D(
+	const double aX, 
+	const double aY, 
+	const double aZ)
 {
 	fCoord[0] = aX;
 	fCoord[1] = aY;
@@ -212,7 +215,11 @@ bool FreeVector3D::IsOrthogonalTo(FreeVector3D &aV)
 void FreeVector3D::TransformBy(TransfMatrix3D &aM)
 {
 	double temp[3];
-	for (int i = 0; i < 3; i++){ temp[i] = fCoord[i]; }
+	for (int i = 0; i < 3; i++)
+	{
+		temp[i] = fCoord[i]; 
+	}
+
 	for (int i = 0; i < 3; i++)
 	{
 		fCoord[i] = 0.0; // free vectors are not translated.
