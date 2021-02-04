@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "TransfMatrix3D.h"
+#include "FreeVector3D.h"
 #include <cmath>
 
 //========================================================================================
@@ -109,10 +110,60 @@ void TransfMatrix3D::SetToRotationMatrix_ZX(const double aAngle)
 } // TransfMatrix3D::SetToRotationMatrix_XY
 
 //========================================================================================
+void TransfMatrix3D::SetToRotateToVerticalUp(
+	const double & p0X,
+    const double & p0Y,
+    const double & p0Z,
+    const double & p1X,
+    const double & p1Y,
+    const double & p1Z)
+{
+	TransfMatrix3D mResult;
+	mResult.SetToIdentity();
+	if ((p0X != p1X) || (p0Y != p1Y) || (p0Z != p1Z) ){
+		FreeVector3D zAxis(0.0, 0.0, 1.0);
+
+		TransfMatrix3D m1, m1Inverse;
+		m1.SetToTranslationMatrix(-p0X, -p0Y, -p0Z);
+		m1Inverse.SetToTranslationMatrix(p0X, p0Y, p0Z);
+		
+		TransfMatrix3D m2;
+		m2.SetToIdentity();
+
+		FreeVector3D rotatedZAxis((p1X - p0X), (p1Y - p0Y), (p1Z - p0Z));
+		const bool alreadyParallel = rotatedZAxis.IsParallelTo(zAxis);
+		if (!alreadyParallel || (rotatedZAxis.Z() < 0.0)){
+			rotatedZAxis.Normalize();
+			FreeVector3D rotatedXAxis(1.0, 0.0, 0.0);
+			if (!alreadyParallel){
+				rotatedXAxis = rotatedZAxis.Cross(zAxis);
+				rotatedXAxis.Normalize();
+			}
+			FreeVector3D rotatedYAxis = rotatedZAxis.Cross(rotatedXAxis);
+			rotatedYAxis.Normalize();
+			m2.fM[0][0] = rotatedXAxis.X();
+			m2.fM[0][1] = rotatedXAxis.Y();
+			m2.fM[0][2] = rotatedXAxis.Z();
+
+			m2.fM[1][0] = rotatedYAxis.X();
+			m2.fM[1][1] = rotatedYAxis.Y();
+			m2.fM[1][2] = rotatedYAxis.Z();
+
+			m2.fM[2][0] = rotatedZAxis.X();
+			m2.fM[2][1] = rotatedZAxis.Y();
+			m2.fM[2][2] = rotatedZAxis.Z();
+
+			mResult = m1Inverse.MatrixMatrixMultiply(m2.MatrixMatrixMultiply(m1));
+		} // if p1Prime is not already parallel to the Z axis
+	} // if p0 and p1 are distinct
+	CopyFrom(mResult);
+} // TransfMatrix3D::SetToRotateToVerticalUp
+
+//========================================================================================
 TransfMatrix3D TransfMatrix3D::MatrixMatrixMultiply(const TransfMatrix3D aMatrix) const
 {
 	TransfMatrix3D result;
-	for (int i = 0; i < 4;i++)
+	for (int i = 0; i < 4; i++)
 	{
 		for (int j = 0; j < 4; j++)
 		{
@@ -166,12 +217,12 @@ void TransfMatrix3D::AddMultipleOfRow(const int aRow1, const double aMultiplier,
 } // TransfMatrix3D::AddMultipleOfRow
 
 //========================================================================================
-bool TransfMatrix3D::Invert()
+TransfMatrix3D TransfMatrix3D::Invert() const
 {
 	TransfMatrix3D workingCopy(*this);
-	TransfMatrix3D backupCopy(*this);
+	TransfMatrix3D resultMatrix;
 	bool ok = true;
-	SetToIdentity();
+	resultMatrix.SetToIdentity();
 
 	for (int iCol = 0; (iCol < 4) && ok; iCol++)
 	{
@@ -192,33 +243,31 @@ bool TransfMatrix3D::Invert()
 		if (ok)
 		{
 			// swap the pivot row into position
-			SwapRows(iCol, iPvt);
+			resultMatrix.SwapRows(iCol, iPvt);
 			workingCopy.SwapRows(iCol, iPvt);
 
 			// divide the pivot row by the pivot element
 			double value = workingCopy.fM[iCol][iCol];
-			DivideRowBy(iCol, value);
+			resultMatrix.DivideRowBy(iCol, value);
 			workingCopy.DivideRowBy(iCol, value);
 
 			// subtract a multiple of the pivot row from the other rows
-			for (int iRow = 0; iRow < 4;iRow++)
+			for (int iRow = 0; iRow < 4; iRow++)
 			{
 				if (iRow != iCol)
 				{
 					value = workingCopy.fM[iRow][iCol];
-					AddMultipleOfRow(iCol, -value, iRow);
+					resultMatrix.AddMultipleOfRow(iCol, -value, iRow);
 					workingCopy.AddMultipleOfRow(iCol, -value, iRow);
 				} // if this index iRow is not the pivot row
 			} // loop through the rows
 		} // if ok
 	} // loop through the columns
-	
-	if (!ok)
-	{
-		CopyFrom(backupCopy);
-	} // if something went wrong
-	
-	return ok;
+
+	if (!ok){
+		resultMatrix.SetToIdentity();
+	}
+	return resultMatrix;
 } // TransfMatrix3D::Invert
 
 //========================================================================================

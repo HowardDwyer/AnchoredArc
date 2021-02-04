@@ -44,6 +44,16 @@ public:
 		SetBoundingBox(); 
 	}
 	
+	bool operator == (const Point3D otherPt) const
+	{
+		return (X() == otherPt.X()) && (Y() == otherPt.Y()) && (Z() == otherPt.Z());
+	}
+
+	bool operator != (const Point3D otherPt) const
+	{
+		return !( (X() == otherPt.X()) && (Y() == otherPt.Y()) && (Z() == otherPt.Z()) );
+	}
+
 	void SetToPoint(const Point3D &aSource);
 	virtual void TransformBy(const TransfMatrix3D &aM);
 

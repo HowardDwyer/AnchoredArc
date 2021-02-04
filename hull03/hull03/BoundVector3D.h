@@ -17,8 +17,15 @@ public:
 	BoundVector3D(const BoundVector3D &aSource);
 	~BoundVector3D();
 
-	Point3D BasePoint() const { return Point3D(fBasePt); }  // a copy, not a reference
-	FreeVector3D DirVector() const { return FreeVector3D(fDirVector); } // a copy, not a reference
+//	Point3D BasePoint() const { return fBasePt; }
+	Point3D StartPoint() const { return fBasePt; }
+	Point3D EndPoint() const {
+		return Point3D(
+			fBasePt.X() + fDirVector.X(), 
+			fBasePt.Y() + fDirVector.Y(), 
+			fBasePt.Z() + fDirVector.Z()); 
+	}
+	FreeVector3D DirVector() const { return fDirVector; }
 
 	virtual void SetBoundingBox() const;
 	virtual void Draw(){ /* TODO*/ }
