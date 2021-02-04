@@ -7,24 +7,24 @@ class FreeVector3D
 {
 private:
 	double fCoord[3];
-	double fLength;
-	bool fIsLengthComputed;
+	mutable double fLength;
+	mutable bool fIsLengthComputed;
 public:
 	FreeVector3D();
 	FreeVector3D(const double aX, const double aY, const double aZ);
-	FreeVector3D(Point3D &aFromPt, Point3D &aToPt);
+	FreeVector3D(const Point3D &aFromPt, const Point3D &aToPt);
 
-	FreeVector3D(FreeVector3D &aSource);
+	FreeVector3D(const FreeVector3D &aSource);
 	~FreeVector3D();
 
 	bool Normalize();
-	bool IsExactlyZero();
-	bool IsApproxZero();
+	bool IsExactlyZero() const;
+	bool IsApproxZero() const;
 	void SetToZero();
 
-	double X(){ return fCoord[0]; }
-	double Y(){ return fCoord[1]; }
-	double Z(){ return fCoord[2]; }
+	double X() const { return fCoord[0]; }
+	double Y() const { return fCoord[1]; }
+	double Z() const { return fCoord[2]; }
 
 	void SetX(const double aX)
 	{ 
@@ -44,27 +44,27 @@ public:
 		fIsLengthComputed = false; 
 	}
 
-	void SetToVector(FreeVector3D &aSource);
+	void SetToVector(const FreeVector3D &aSource);
 	
-	double Length();
+	double Length() const;
 	
 	void Setlength(const double aNewLength);
 	
 	void Scale(const double aScale);
 
-	double Dot(FreeVector3D &aV);
+	double Dot(const FreeVector3D &aV) const;
 	
-	FreeVector3D Cross(FreeVector3D &aV);
+	FreeVector3D Cross(const FreeVector3D &aV) const;
 
-	bool IsParallelTo(FreeVector3D &aV);
+	bool IsParallelTo(const FreeVector3D &aV) const;
 	
-	bool IsOrthogonalTo(FreeVector3D &aV);
+	bool IsOrthogonalTo(const FreeVector3D &aV) const;
 
-	void TransformBy(TransfMatrix3D &aM);
+	void TransformBy(const TransfMatrix3D &aM);
 
-	FreeVector3D operator + (FreeVector3D &aV);
-	FreeVector3D operator - (FreeVector3D &aV);
-	double operator * (FreeVector3D &aV);
+	FreeVector3D operator + (const FreeVector3D &aV) const;
+	FreeVector3D operator - (const FreeVector3D &aV) const;
+	double operator * (const FreeVector3D &aV) const;
 	void operator *= (const double aScale);
 };
 

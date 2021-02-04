@@ -5,17 +5,17 @@ class HullGeomType
 {
 protected:
 	bool fIsVis;
-	double fMinX, fMaxX, fMinY, fMaxY, fMinZ, fMaxZ;
-	bool fIsBoundingBoxSet;
+	mutable double fMinX, fMaxX, fMinY, fMaxY, fMinZ, fMaxZ;
+	mutable bool fIsBoundingBoxSet;
 	
-	virtual void SetBoundingBox() = 0;
+	virtual void SetBoundingBox() const = 0;
 
 public:
 	HullGeomType();
 	HullGeomType(const HullGeomType & aSource);
 	~HullGeomType();
 
-	bool Visible()
+	bool Visible() const
 	{ 
 		return fIsVis; 
 	}
@@ -27,7 +27,7 @@ public:
 
 	virtual void Draw() = 0;
 
-	double MinX()
+	double MinX() const
 	{ 
 		if (!fIsBoundingBoxSet)
 		{ 
@@ -36,7 +36,7 @@ public:
 		return fMinX; 
 	}
 
-	double MaxX()
+	double MaxX()  const
 	{ 
 		if (!fIsBoundingBoxSet)
 		{ 
@@ -45,7 +45,7 @@ public:
 		return fMaxX; 
 	}
 
-	double MinY()
+	double MinY()  const
 	{ 
 		if (!fIsBoundingBoxSet)
 		{ 
@@ -54,7 +54,7 @@ public:
 		return fMinY; 
 	}
 
-	double MaxY()
+	double MaxY() const
 	{ 
 		if (!fIsBoundingBoxSet)
 		{ 
@@ -63,7 +63,7 @@ public:
 		return fMaxY; 
 	}
 
-	double MinZ()
+	double MinZ() const
 	{ 
 		if (!fIsBoundingBoxSet)
 		{ 
@@ -72,7 +72,7 @@ public:
 		return fMinZ; 
 	}
 	
-	double MaxZ()
+	double MaxZ() const
 	{ 
 		if (!fIsBoundingBoxSet)
 		{
@@ -81,8 +81,8 @@ public:
 		return fMaxZ; 
 	}
 
-	double Diagonal();
+	double Diagonal() const;
 
-	virtual void TransformBy(TransfMatrix3D &aM) = 0;
+	virtual void TransformBy(const TransfMatrix3D &aM) = 0;
 
 }; // class HullGeomType

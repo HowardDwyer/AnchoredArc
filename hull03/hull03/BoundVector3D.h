@@ -12,15 +12,15 @@ private:
 
 public:
 	BoundVector3D();
-	BoundVector3D(Point3D &aBasePt, FreeVector3D &aDirVector);
-	BoundVector3D(Point3D &aFromPt, Point3D &aToPt);
-	BoundVector3D(BoundVector3D &aSource);
+	BoundVector3D(const Point3D &aBasePt, const FreeVector3D &aDirVector);
+	BoundVector3D(const Point3D &aFromPt, const Point3D &aToPt);
+	BoundVector3D(const BoundVector3D &aSource);
 	~BoundVector3D();
 
-	Point3D BasePoint(){ return Point3D(fBasePt); }  // a copy, not a reference
-	FreeVector3D DirVector(){ return FreeVector3D(fDirVector); } // a copy, not a reference
+	Point3D BasePoint() const { return Point3D(fBasePt); }  // a copy, not a reference
+	FreeVector3D DirVector() const { return FreeVector3D(fDirVector); } // a copy, not a reference
 
-	virtual void SetBoundingBox();
+	virtual void SetBoundingBox() const;
 	virtual void Draw(){ /* TODO*/ }
 
 	void Normalize()
@@ -34,18 +34,18 @@ public:
 		fDirVector.SetToZero(); 
 	}
 
-	void SetVector(FreeVector3D &aSourceVec)
+	void SetVector(const FreeVector3D &aSourceVec)
 	{ 
 		fDirVector.SetToVector(aSourceVec); 
 	}
 
-	void SetToBoundVector(BoundVector3D &aSource)
+	void SetToBoundVector(const BoundVector3D &aSource)
 	{ 
 		fBasePt.SetToPoint(aSource.fBasePt); 
 		fDirVector.SetToVector(aSource.fDirVector); 
 	}
 
-	void SetBase(Point3D &aSourcePt)
+	void SetBase(const Point3D &aSourcePt)
 	{ 
 		fBasePt.SetToPoint(aSourcePt); 
 	}
@@ -55,23 +55,23 @@ public:
 		fDirVector.Setlength(aNewLength); 
 	}
 
-	void TransformBy(TransfMatrix3D &aM)
+	void TransformBy(const TransfMatrix3D &aM)
 	{ 
 		fBasePt.TransformBy(aM); 
 		fDirVector.TransformBy(aM); 
 	}
 
-	double Length()
+	double Length() const
 	{ 
 		return fDirVector.Length(); 
 	}
 	
-	bool IsExactlyZero()
+	bool IsExactlyZero() const
 	{ 
 		return fDirVector.IsExactlyZero(); 
 	}
 	
-	bool IsApproxZero()
+	bool IsApproxZero() const
 	{ 
 		return fDirVector.IsApproxZero(); 
 	}

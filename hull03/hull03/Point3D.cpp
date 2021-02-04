@@ -22,13 +22,10 @@ Point3D::Point3D(
 } // Point3D::Point3D
 
 //===================================================================================
-Point3D::Point3D(Point3D &aSource) 
+Point3D::Point3D(const Point3D &aSource) 
 	: HullGeomType(aSource)
 {
-	fCoord[0] = aSource.fCoord[0];
-	fCoord[1] = aSource.fCoord[1];
-	fCoord[2] = aSource.fCoord[2];
-	SetBoundingBox();
+	SetToPoint(aSource);
 } // Point3D::Point3D
 
 //===================================================================================
@@ -37,7 +34,7 @@ Point3D::~Point3D()
 }
 
 //===================================================================================
-void Point3D::SetToPoint(Point3D &aSource)
+void Point3D::SetToPoint(const Point3D &aSource)
 {
 	fCoord[0] = aSource.fCoord[0];
 	fCoord[1] = aSource.fCoord[1];
@@ -46,7 +43,7 @@ void Point3D::SetToPoint(Point3D &aSource)
 } // Point3D::SetToPoint
 
 //===================================================================================
-void Point3D::SetBoundingBox()
+void Point3D::SetBoundingBox() const
 {
 	fMinX = fMaxX = fCoord[0];
 	fMinY = fMaxY = fCoord[1];
@@ -55,7 +52,7 @@ void Point3D::SetBoundingBox()
 }// Point3D::SetBoundingBox
 
 //===================================================================================
-void Point3D::TransformBy(TransfMatrix3D &aM)
+void Point3D::TransformBy(const TransfMatrix3D &aM)
 {
 	double temp[3];
 	for (int i = 0; i < 3; i++)
@@ -69,7 +66,7 @@ void Point3D::TransformBy(TransfMatrix3D &aM)
 		for (int k = 0; k < 3; k++)
 		{
 			fCoord[i] += aM.At(i, k) * temp[k];
-		} // loop to compute the ot product
+		} // loop to compute the dot product
 	}// loop through the coord in the point
 	SetBoundingBox();
 } // Point3D::TransformBy

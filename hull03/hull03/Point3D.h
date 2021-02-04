@@ -8,17 +8,17 @@ private:
 	double fCoord[3];
 
 protected:
-	virtual void SetBoundingBox();
+	virtual void SetBoundingBox() const;
 public:
 	Point3D();
 	Point3D(const double aX, const double aY, const double aZ);
-	Point3D(Point3D & aSource);
+	Point3D(const Point3D & aSource);
 	~Point3D();
 
 	virtual void Draw(){ /* TODO*/ }
-	double X(){ return fCoord[0]; }
-	double Y(){ return fCoord[1]; }
-	double Z(){ return fCoord[2]; }
+	double X() const { return fCoord[0]; }
+	double Y() const { return fCoord[1]; }
+	double Z() const { return fCoord[2]; }
 
 	void SetX(const double aX)
 	{
@@ -44,8 +44,8 @@ public:
 		SetBoundingBox(); 
 	}
 	
-	void SetToPoint(Point3D &aSource);
-	virtual void TransformBy(TransfMatrix3D &aM);
+	void SetToPoint(const Point3D &aSource);
+	virtual void TransformBy(const TransfMatrix3D &aM);
 
 }; // class Point3D
 

@@ -10,16 +10,16 @@ class Spline_5Pt_1D
 {
 private:
 	bool fIsDefined;
-	bool fExtentsComputed;
-	double fMinValue;
-	double fMaxValue;
+	mutable bool fExtentsComputed;
+	mutable double fMinValue;
+	mutable double fMaxValue;
 
 	double fCoeffA[5];
 	double fCoeffB[5];
 	double fCoeffC[5];
 	double fCoeffD[5];
 
-	void FindMinMax();
+	void FindMinMax() const;
 public:
 	Spline_5Pt_1D();
 	
@@ -41,18 +41,18 @@ public:
 		const double aP3, 
 		const double aP4);
 
-	double P(const double aT);
+	double P(const double aT) const;
 
-	double MinValue();
-	double MaxValue();
-	bool FindFirst(const double aTarget, double* aT);
+	double MinValue() const;
+	double MaxValue() const;
+	bool FindFirst(const double aTarget, double* aT) const;
 
-	bool Defined()
+	bool Defined() const
 	{ 
 		return fIsDefined; 
 	}
 
-	bool ExtentsComputed()
+	bool ExtentsComputed() const
 	{
 		return fExtentsComputed; 
 	}

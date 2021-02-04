@@ -11,39 +11,39 @@ public:
 		fNormal.SetToZero(); 
 	}
 
-	Plane3D(BoundVector3D &aSource)
+	Plane3D(const BoundVector3D &aSource)
 	{ 
 		fNormal.SetToBoundVector(aSource); 
 	}
 
-	Plane3D(Point3D &aPointOnPlane, FreeVector3D &aNormalVector);
-	Plane3D(Point3D &aPt1, Point3D &aPt2, Point3D &aPt3 );
+	Plane3D(const Point3D &aPointOnPlane, const FreeVector3D &aNormalVector);
+	Plane3D(const Point3D &aPt1, const Point3D &aPt2, const Point3D &aPt3);
 	~Plane3D();
 
-	bool IsWellDefined();
+	bool IsWellDefined() const;
 
 	void Normalize()
 	{ 
 		fNormal.Normalize(); 
 	}
 
-	Point3D PointOnPlane()
+	Point3D PointOnPlane() const
 	{ 
 		return fNormal.BasePoint(); 
 	}  // a copy, not a reference
 	
-	FreeVector3D NormalDirVector()
+	FreeVector3D NormalDirVector() const
 	{
 		return fNormal.DirVector(); 
 	}  // a copy, not a reference
 
-	void SetUsingThreePts(Point3D &aPt1, Point3D &aPt2, Point3D &aPt3);
-	void SetUsingPtAndNormal(Point3D &aPointOnPlane, FreeVector3D &aNormalVector);
+	void SetUsingThreePts(const Point3D &aPt1, const Point3D &aPt2, const Point3D &aPt3);
+	void SetUsingPtAndNormal(const Point3D &aPointOnPlane, const FreeVector3D &aNormalVector);
 
-	bool PointIsOnPlane(Point3D &aPt);
-	bool PointIsExactlyOnPlane(Point3D &aPt);
-	bool PointIsAbovePlane(Point3D &aPt);
-	bool PointIsBelowPlane(Point3D &aPt);
-	void ProjectPointOntoPlane(Point3D* aPt);
+	bool PointIsOnPlane(const Point3D &aPt) const;
+	bool PointIsExactlyOnPlane(const Point3D &aPt) const;
+	bool PointIsAbovePlane(const Point3D &aPt) const;
+	bool PointIsBelowPlane(const Point3D &aPt) const;
+	void ProjectPointOntoPlane(Point3D* aPt) const;
 }; // class Plane3D
 

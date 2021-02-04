@@ -24,7 +24,7 @@ FreeVector3D::FreeVector3D(
 } // FreeVector3D::FreeVector3D
 
 //==========================================================================================
-FreeVector3D::FreeVector3D(Point3D &aFromPt, Point3D &aToPt)
+FreeVector3D::FreeVector3D(const Point3D &aFromPt,const Point3D &aToPt)
 {
 	fCoord[0] = (aToPt.X() - aFromPt.X());
 	fCoord[1] = (aToPt.Y() - aFromPt.Y());
@@ -34,7 +34,7 @@ FreeVector3D::FreeVector3D(Point3D &aFromPt, Point3D &aToPt)
 }
 
 //==========================================================================================
-FreeVector3D::FreeVector3D(FreeVector3D &aSource)
+FreeVector3D::FreeVector3D(const FreeVector3D &aSource)
 {
 	SetToVector(aSource);
 } // FreeVector3D::FreeVector3D
@@ -43,7 +43,7 @@ FreeVector3D::FreeVector3D(FreeVector3D &aSource)
 FreeVector3D::~FreeVector3D(){}
 
 //==========================================================================================
-double FreeVector3D::Length()
+double FreeVector3D::Length() const
 {
 	if (!fIsLengthComputed)
 	{
@@ -65,16 +65,16 @@ void FreeVector3D::Scale(const double aScale)
 //==========================================================================================
 void FreeVector3D::Setlength(const double aNewLength)
 {
-	double length = Length();
+	const double length = Length();
 	if (length > 0.0)
 	{
-		double factor = aNewLength / length;
+		const double factor = aNewLength / length;
 		Scale(factor);
 	} // if this is not a zero vector
 } // FreeVector3D::Setlength
 
 //==========================================================================================
-void FreeVector3D::SetToVector(FreeVector3D &aSource)
+void FreeVector3D::SetToVector(const FreeVector3D &aSource)
 {
 	fCoord[0] = aSource.fCoord[0];
 	fCoord[1] = aSource.fCoord[1];
@@ -86,12 +86,11 @@ void FreeVector3D::SetToVector(FreeVector3D &aSource)
 //==========================================================================================
 bool FreeVector3D::Normalize()
 {
-	double length = Length();
+	const double length = Length();
 	if ((length > 0.0) && (length != 1.0))
 	{
-		fCoord[0] /= length;
-		fCoord[1] /= length;
-		fCoord[2] /= length;
+		const double scale = 1.0 / length;
+		Scale(scale);
 		fLength = 1.0;
 		fIsLengthComputed = true;
 	}
@@ -99,29 +98,29 @@ bool FreeVector3D::Normalize()
 } // FreeVector3D::Normalize
 
 //==========================================================================================
-FreeVector3D FreeVector3D::operator + (FreeVector3D &aV)
+FreeVector3D FreeVector3D::operator + (const FreeVector3D &aV) const
 {
-	FreeVector3D lThisPlusV;
-	lThisPlusV.fCoord[0] = fCoord[0] + aV.fCoord[0];
-	lThisPlusV.fCoord[1] = fCoord[1] + aV.fCoord[1];
-	lThisPlusV.fCoord[2] = fCoord[2] + aV.fCoord[2];
-	lThisPlusV.fIsLengthComputed = false;
-	return lThisPlusV;
+	FreeVector3D thisPlusV;
+	thisPlusV.fCoord[0] = fCoord[0] + aV.fCoord[0];
+	thisPlusV.fCoord[1] = fCoord[1] + aV.fCoord[1];
+	thisPlusV.fCoord[2] = fCoord[2] + aV.fCoord[2];
+	thisPlusV.fIsLengthComputed = false;
+	return thisPlusV;
 } // FreeVector3D::operator +
 
 //==========================================================================================
-FreeVector3D FreeVector3D::operator - (FreeVector3D &aV)
+FreeVector3D FreeVector3D::operator - (const FreeVector3D &aV) const
 {
-	FreeVector3D lThisPlusV;
-	lThisPlusV.fCoord[0] = fCoord[0] + aV.fCoord[0];
-	lThisPlusV.fCoord[1] = fCoord[1] + aV.fCoord[1];
-	lThisPlusV.fCoord[2] = fCoord[2] + aV.fCoord[2];
-	lThisPlusV.fIsLengthComputed = false;
-	return lThisPlusV;
+	FreeVector3D thisPlusV;
+	thisPlusV.fCoord[0] = fCoord[0] + aV.fCoord[0];
+	thisPlusV.fCoord[1] = fCoord[1] + aV.fCoord[1];
+	thisPlusV.fCoord[2] = fCoord[2] + aV.fCoord[2];
+	thisPlusV.fIsLengthComputed = false;
+	return thisPlusV;
 } // FreeVector3D::operator +
 
 //==========================================================================================
-double FreeVector3D::operator * (FreeVector3D &aV)
+double FreeVector3D::operator * (const FreeVector3D &aV) const
 {
 	return Dot(aV);
 } // FreeVector3D::operator -
@@ -133,7 +132,7 @@ void FreeVector3D::operator *= (const double aScale)
 } // FreeVector3D::operator *=
 
 //==========================================================================================
-double FreeVector3D::Dot(FreeVector3D &aV)
+double FreeVector3D::Dot(const FreeVector3D &aV) const
 {
 	double dot = 0.0;
 	dot += fCoord[0] * aV.fCoord[0];
@@ -143,7 +142,7 @@ double FreeVector3D::Dot(FreeVector3D &aV)
 } // FreeVector3D::operator -
 
 //==========================================================================================
-FreeVector3D FreeVector3D::Cross(FreeVector3D &aV)
+FreeVector3D FreeVector3D::Cross(const FreeVector3D &aV) const
 {
 	FreeVector3D crossProd;
 	crossProd.fCoord[0] = fCoord[1] * aV.fCoord[2] - fCoord[2] * aV.fCoord[1];
@@ -154,13 +153,13 @@ FreeVector3D FreeVector3D::Cross(FreeVector3D &aV)
 } // FreeVector3D::Cross
 
 //==========================================================================================
-bool FreeVector3D::IsExactlyZero()
+bool FreeVector3D::IsExactlyZero() const
 {
 	return ((fCoord[0] == 0.0) && (fCoord[1] == 0.0) && (fCoord[2] == 0.0));
 } // FreeVector3D::IsExactlyZero
 
 //==========================================================================================
-bool FreeVector3D::IsApproxZero()
+bool FreeVector3D::IsApproxZero() const
 {
 	return ((abs(fCoord[0]) <= HullConst::VERYSMALL()) 
 		&& (abs(fCoord[1]) <= HullConst::VERYSMALL()) 
@@ -178,16 +177,16 @@ void FreeVector3D::SetToZero()
 //==========================================================================================
 // Note: a zero vector is parallel to any other vector.
 //==========================================================================================
-bool FreeVector3D::IsParallelTo(FreeVector3D &aV)
+bool FreeVector3D::IsParallelTo(const FreeVector3D &aV) const
 {
 	bool result = true;
 	if (IsExactlyZero()){result = true;}
 	else if (aV.IsExactlyZero()){result = true;}
 	else
 	{
-		double dot = Dot(aV);
-		double length_This = Length();
-		double length_V = aV.Length();
+		const double dot = Dot(aV);
+		const double length_This = Length();
+		const double length_V = aV.Length();
 		result = (abs(dot) >= length_This * length_V * HullConst::COSANGLETOL());
 	} // neither of the vectors is zero
 	return result;
@@ -196,23 +195,23 @@ bool FreeVector3D::IsParallelTo(FreeVector3D &aV)
 //==========================================================================================
 // Note: a zero vector is orthgonal to any other vector.
 //==========================================================================================
-bool FreeVector3D::IsOrthogonalTo(FreeVector3D &aV)
+bool FreeVector3D::IsOrthogonalTo(const FreeVector3D &aV) const
 {
 	bool result = true;
 	if (IsExactlyZero()){ result = true; }
 	else if (aV.IsExactlyZero()){ result = true; }
 	else
 	{
-		double dot = Dot(aV);
-		double length_This = Length();
-		double length_V = aV.Length();
+		const double dot = Dot(aV);
+		const double length_This = Length();
+		const double length_V = aV.Length();
 		result = (abs(dot) <= length_This * length_V * HullConst::SINANGLETOL());
 	} // neither of the vectors is zero
 	return result;
 } // FreeVector3D::IsOrthogonalTo
 
 //==========================================================================================
-void FreeVector3D::TransformBy(TransfMatrix3D &aM)
+void FreeVector3D::TransformBy(const TransfMatrix3D &aM)
 {
 	double temp[3];
 	for (int i = 0; i < 3; i++)

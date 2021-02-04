@@ -99,7 +99,7 @@ void Spline_5Pt_1D::ConstructCoefficients(
 } // Spline_5Pt_1D::ConstructCoefficients
 
 //====================================================================================
-double Spline_5Pt_1D::P(const double aT)
+double Spline_5Pt_1D::P(const double aT) const
 {
 	double returnValue = 0.0; // default value if spline is not defined
 	double deltaT = 0.0;
@@ -156,7 +156,7 @@ double Spline_5Pt_1D::P(const double aT)
 //====================================================================================
 // a simple step search is used to get approximate values for the minimum and maximum.
 // TODO: Use the derivative to find local max/min.
-void Spline_5Pt_1D::FindMinMax()
+void Spline_5Pt_1D::FindMinMax() const
 {
 	if (!fIsDefined)
 	{ 
@@ -188,7 +188,7 @@ void Spline_5Pt_1D::FindMinMax()
 } // Spline_5Pt_1D::FindMinMax
 
 //====================================================================================
-double Spline_5Pt_1D::MinValue()
+double Spline_5Pt_1D::MinValue() const
 {
 	if (!fExtentsComputed)
 	{
@@ -198,7 +198,7 @@ double Spline_5Pt_1D::MinValue()
 } // Spline_5Pt_1D::MinValue
 
 //====================================================================================
-double Spline_5Pt_1D::MaxValue()
+double Spline_5Pt_1D::MaxValue() const
 {
 	if (!fExtentsComputed)
 	{
@@ -208,7 +208,7 @@ double Spline_5Pt_1D::MaxValue()
 } // Spline_5Pt_1D::MaxValue
 
 //====================================================================================
-bool Spline_5Pt_1D::FindFirst(const double aTarget, double* aT)
+bool Spline_5Pt_1D::FindFirst(const double aTarget, double* aT) const
 {
 	bool foundLowT = false;
 	bool foundHighT = false;

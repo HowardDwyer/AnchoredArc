@@ -30,10 +30,10 @@ HullGeomType::~HullGeomType()
 }
 
 //==============================================================================
-double HullGeomType::Diagonal()
+double HullGeomType::Diagonal() const
 {
-	double dx = MaxX() - MinX();
-	double dy = MaxY() - MinY();
-	double dz = MaxZ() - MinZ();
+	const double dx = MaxX() - MinX();
+	const double dy = MaxY() - MinY();
+	const double dz = MaxZ() - MinZ();
 	return sqrt(dx*dx + dy*dy + dz*dz);
 } // double HullGeomType::Diagonal

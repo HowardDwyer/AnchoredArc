@@ -15,7 +15,7 @@ TransfMatrix3D::~TransfMatrix3D()
 } // TransfMatrix3D::~TransfMatrix3D
 
 //========================================================================================
-TransfMatrix3D::TransfMatrix3D(TransfMatrix3D & aSource)
+TransfMatrix3D::TransfMatrix3D(const TransfMatrix3D & aSource)
 {
 	for (int i = 0; i < 4; i++)
 	{
@@ -27,7 +27,7 @@ TransfMatrix3D::TransfMatrix3D(TransfMatrix3D & aSource)
 } // TransfMatrix3D::TransfMatrix3D
 
 //========================================================================================
-double TransfMatrix3D::At(const int aRow, const int aCol)
+double TransfMatrix3D::At(const int aRow, const int aCol) const
 {
 	double result = 0.0;
 	if ((0 <= aRow) && (aRow <= 3) && (0 <= aCol) && (aCol <= 3))
@@ -76,8 +76,8 @@ void TransfMatrix3D::SetToTranslationMatrix(const double aDx, const double aDy, 
 void TransfMatrix3D::SetToRotationMatrix_XY(const double aAngle)
 {
 	SetToIdentity();
-	double sinAngle = sin(aAngle);
-	double cosAngle = cos(aAngle);
+	const double sinAngle = sin(aAngle);
+	const double cosAngle = cos(aAngle);
 	fM[0][0] = cosAngle;	fM[0][1] = -sinAngle;   fM[0][2] = 0.0;
 	fM[1][0] = sinAngle;	fM[1][1] = cosAngle;	fM[1][2] = 0.0;
 	fM[2][0] = 0.0;			fM[2][1] = 0.0;			fM[2][2] = 1.0;
@@ -89,8 +89,8 @@ void TransfMatrix3D::SetToRotationMatrix_XY(const double aAngle)
 void TransfMatrix3D::SetToRotationMatrix_YZ(const double aAngle)
 {
 	SetToIdentity();
-	double sinAngle = sin(aAngle);
-	double cosAngle = cos(aAngle);
+	const double sinAngle = sin(aAngle);
+	const double cosAngle = cos(aAngle);
 	fM[0][0] = cosAngle;	fM[0][1] = -sinAngle;   fM[0][2] = 0.0;
 	fM[1][0] = sinAngle;	fM[1][1] = cosAngle;	fM[1][2] = 0.0;
 	fM[2][0] = 0.0;			fM[2][1] = 0.0;			fM[2][2] = 1.0;
@@ -101,15 +101,15 @@ void TransfMatrix3D::SetToRotationMatrix_YZ(const double aAngle)
 void TransfMatrix3D::SetToRotationMatrix_ZX(const double aAngle)
 {
 	SetToIdentity();
-	double sinAngle = sin(aAngle);
-	double cosAngle = cos(aAngle);
+	const double sinAngle = sin(aAngle);
+	const double cosAngle = cos(aAngle);
 	fM[0][0] = cosAngle;	fM[0][1] = 0.0;			fM[0][2] = sinAngle;
 	fM[1][0] = 0.0;			fM[1][1] = 1.0;			fM[1][2] = 0.0;
 	fM[2][0] = -sinAngle;	fM[2][1] = 0.0;			fM[2][2] = cosAngle;
 } // TransfMatrix3D::SetToRotationMatrix_XY
 
 //========================================================================================
-TransfMatrix3D TransfMatrix3D::MatrixMatrixMultiply(const TransfMatrix3D aMatrix)
+TransfMatrix3D TransfMatrix3D::MatrixMatrixMultiply(const TransfMatrix3D aMatrix) const
 {
 	TransfMatrix3D result;
 	for (int i = 0; i < 4;i++)
@@ -133,7 +133,7 @@ void TransfMatrix3D::SwapRows(const int aRow1, const int aRow2)
 	{
 		for (int j = 0; j < 4; j++)
 		{
-			double temp = fM[aRow1][j];
+			const double temp = fM[aRow1][j];
 			fM[aRow1][j] = fM[aRow2][j];
 			fM[aRow2][j] = temp;
 		} //loop through the columns
@@ -145,9 +145,10 @@ void TransfMatrix3D::DivideRowBy(const int aRow1, const double aDivisor)
 {
 	if ((0 <= aRow1) && (aRow1 <= 3) && (aDivisor != 0.0))
 	{
+		const double scale = 1.0 / aDivisor;
 		for (int j = 0; j < 4; j++)
 		{
-			fM[aRow1][j] /= aDivisor;
+			fM[aRow1][j] *= scale;
 		} //loop through the columns
 	} // if the inputs are valid
 } // TransfMatrix3D::DivideRowBy
@@ -219,7 +220,6 @@ bool TransfMatrix3D::Invert()
 	
 	return ok;
 } // TransfMatrix3D::Invert
-
 
 //========================================================================================
 //========================================================================================

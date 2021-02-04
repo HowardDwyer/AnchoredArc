@@ -13,10 +13,10 @@ private:
 
 public:
 	TransfMatrix3D();
-	TransfMatrix3D(TransfMatrix3D & aSource);
+	TransfMatrix3D(const TransfMatrix3D & aSource);
 	~TransfMatrix3D();
 	
-	double At(const int aRow, const int aCol);
+	double At(const int aRow, const int aCol) const;
 
 	void SetToIdentity();
 	void SetToTranslationMatrix(
@@ -30,7 +30,7 @@ public:
 	void CopyFrom(const TransfMatrix3D aSource);
 	bool Invert();
 
-	TransfMatrix3D MatrixMatrixMultiply(const TransfMatrix3D aMatrix);
+	TransfMatrix3D MatrixMatrixMultiply(const TransfMatrix3D aMatrix) const;
 
 }; // class TransfMatrix3D
 

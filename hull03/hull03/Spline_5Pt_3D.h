@@ -16,21 +16,21 @@ private:
 	Point3D fP3;
 	Point3D fP4;
 protected:
-	virtual void SetBoundingBox();
+	virtual void SetBoundingBox() const;
 public:
 	Spline_5Pt_3D();
 
 	Spline_5Pt_3D(
-		Point3D aP0, 
-		Point3D aP1, 
-		Point3D aP2, 
-		Point3D aP3, 
-		Point3D aP4);
+		const Point3D aP0, 
+		const Point3D aP1,
+		const Point3D aP2,
+		const Point3D aP3,
+		const Point3D aP4);
 
 	~Spline_5Pt_3D();
 
 	virtual void Draw(){ /* TODO*/ }
-	virtual void TransformBy(TransfMatrix3D &aM);
+	virtual void TransformBy(const TransfMatrix3D &aM);
 
 	void Reset();
 	
@@ -43,21 +43,21 @@ public:
 	
 	void ConstructCoefficients();
 
-	Point3D P(const double aT);
+	Point3D P(const double aT) const;
 	
-	bool Defined();
+	bool Defined() const;
 	
-	bool FindFirstX(const double aTarget, double* aT)
+	bool FindFirstX(const double aTarget, double* aT) const
 	{ 
 		return fSpline_X.FindFirst(aTarget, aT); 
 	}
 
-	bool FindFirstY(const double aTarget, double* aT)
+	bool FindFirstY(const double aTarget, double* aT) const
 	{
 		return fSpline_Y.FindFirst(aTarget, aT); 
 	}
 
-	bool FindFirstZ(const double aTarget, double* aT)
+	bool FindFirstZ(const double aTarget, double* aT) const
 	{
 		return fSpline_Z.FindFirst(aTarget, aT);
 	}

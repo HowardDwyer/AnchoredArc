@@ -9,7 +9,7 @@ BoundVector3D::BoundVector3D()
 } // BoundVector3D::BoundVector3D
 
 //======================================================================================
-BoundVector3D::BoundVector3D(Point3D &aBasePt, FreeVector3D &aDirVector) 
+BoundVector3D::BoundVector3D(const Point3D &aBasePt, const FreeVector3D &aDirVector)
 	: HullGeomType()
 {
 	fBasePt.SetToPoint(aBasePt);
@@ -17,7 +17,7 @@ BoundVector3D::BoundVector3D(Point3D &aBasePt, FreeVector3D &aDirVector)
 } // BoundVector3D::BoundVector3D
 
 //======================================================================================
-BoundVector3D::BoundVector3D(Point3D &aFromPt, Point3D &aToPt) 
+BoundVector3D::BoundVector3D(const Point3D &aFromPt, const Point3D &aToPt)
 	: HullGeomType()
 {
 	fBasePt.SetToPoint(aFromPt);
@@ -27,7 +27,7 @@ BoundVector3D::BoundVector3D(Point3D &aFromPt, Point3D &aToPt)
 } // BoundVector3D::BoundVector3D
 
 //======================================================================================
-BoundVector3D::BoundVector3D(BoundVector3D &aSource) 
+BoundVector3D::BoundVector3D(const BoundVector3D &aSource)
 	: HullGeomType(aSource)
 {
 	fBasePt.SetToPoint(aSource.fBasePt);
@@ -40,15 +40,14 @@ BoundVector3D::~BoundVector3D()
 }// BoundVector3D::~BoundVector3D
 
 //======================================================================================
-void BoundVector3D::SetBoundingBox()
+void BoundVector3D::SetBoundingBox() const
 {
-	double x1, x2, y1, y2, z1, z2;
-	x1 = fBasePt.X(); 
-	x2 = x1 + fDirVector.X();
-	y1 = fBasePt.Y(); 
-	y2 = y1 + fDirVector.Y();
-	z1 = fBasePt.Z(); 
-	z2 = z1 + fDirVector.Z();
+	const double x1 = fBasePt.X(); 
+	const double x2 = x1 + fDirVector.X();
+	const double y1 = fBasePt.Y();
+	const double y2 = y1 + fDirVector.Y();
+	const double z1 = fBasePt.Z();
+	const double z2 = z1 + fDirVector.Z();
 
 	if (x1 > x2)
 	{ 

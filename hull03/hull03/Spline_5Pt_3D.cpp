@@ -63,19 +63,19 @@ void Spline_5Pt_3D::Reset()
 } // Spline_5Pt_3D::Reset
 
 //===========================================================================================
-Point3D Spline_5Pt_3D::P(const double aT)
+Point3D Spline_5Pt_3D::P(const double aT) const
 {
 	return Point3D(fSpline_X.P(aT), fSpline_Y.P(aT), fSpline_Z.P(aT));
 } // Spline_5Pt_3D::P
 
 //===========================================================================================
-bool Spline_5Pt_3D::Defined()
+bool Spline_5Pt_3D::Defined() const
 {
 	return fSpline_X.Defined() && fSpline_Y.Defined() && fSpline_Z.Defined();
 } // Spline_5Pt_3D::Defined
 
 //===========================================================================================
-void Spline_5Pt_3D::SetBoundingBox()
+void Spline_5Pt_3D::SetBoundingBox() const
 {
 	fMinX = fSpline_X.MinValue();
 	fMaxX = fSpline_X.MaxValue();
@@ -87,7 +87,7 @@ void Spline_5Pt_3D::SetBoundingBox()
 }// Spline_5Pt_3D::SetBoundingBox
 
 //===========================================================================================
-void Spline_5Pt_3D::TransformBy(TransfMatrix3D &aM)
+void Spline_5Pt_3D::TransformBy(const TransfMatrix3D &aM)
 {
 	fP0.TransformBy(aM);
 	fP1.TransformBy(aM);
