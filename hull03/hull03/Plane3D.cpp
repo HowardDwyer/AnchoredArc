@@ -56,7 +56,7 @@ bool Plane3D::PointIsOnPlane(const Point3D &aPt) const
 	unitNormal.Normalize();
 	const FreeVector3D tempVector(unitNormal.StartPoint(), aPt);
 	const double dotProd = tempVector.Dot(unitNormal.DirVector());
-	return ( abs(dotProd) <=  HullConst::VERYSMALL() );
+	return (abs(dotProd) <= HullConst::VERYSMALL());
 } // bool Plane3D::PointIsOnPlane
 
 //===============================================================================
@@ -104,10 +104,41 @@ void Plane3D::ProjectPointOntoPlane(Point3D* aPt) const
 	aPt->SetZ(aPt->Z() - dispFromBasePt.Z());
 } // Plane3D::ProjectPointOntoPlane
 
+//===============================================================================
+Point3D Plane3D::PiercingPoint(const Point3D& A, const Point3D& B) const
+{
+	Point3D result;
+	result.SetToZero();
+	if (A != B){
+		const FreeVector3D dirVector(A, B);
+		if (!IsVectorParallel(dirVector)){
+			const Point3D ptOnPlane = PointOnPlane();
+			const FreeVector3D dirV(A, B);
+			const FreeVector3D V2(A, ptOnPlane);
+			const double t = V2.Dot(NormalDirVector()) / dirV.Dot(NormalDirVector());
+			result = Point3D(
+				A.X() + t*(B.X() - A.X()), 
+				A.Y() + t*(B.Y() - A.Y()), 
+				A.Z() + t*(B.Z() - A.Z()) );
+		}
+		else {
+			if (PointIsOnPlane(A)) {
+				result.SetToPoint(A);
+			}
+		}
+	}
+	else if (PointIsOnPlane(A)) {
+		result.SetToPoint(A);
+	}
+	return result;
+} // Plane3D::PiercingPoint
+
+
+//===============================================================================
 bool Plane3D::PointsDefinePlane(const Point3D& p1, const Point3D& p2, const Point3D& p3)
 {
 	bool result = true;
-	if ((p1 == p2)||(p1 == p3)||(p2 == p3)){
+	if ((p1 == p2) || (p1 == p3) || (p2 == p3)){
 		result = false;
 	} // if the points are not distinct
 	else {

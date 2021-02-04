@@ -181,7 +181,7 @@ double Polygon3D::SignedArea() const // positive is CCW, returns 0.0 if the poly
 			const FreeVector3D ABxAC = AB.Cross(AC);
 			result += ABxAC.Z();
 		}
-	} // if there at least 3 vertices and the poly is planr
+	} // if there at least 3 vertices and the poly is planar
 
 	return result;
 } // Polygon3D::SignedArea
