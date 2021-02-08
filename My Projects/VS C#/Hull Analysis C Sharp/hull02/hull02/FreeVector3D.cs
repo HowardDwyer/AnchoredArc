@@ -13,6 +13,7 @@ namespace hull02
     {
         // ======= fields =========================================================================================
         private double[] VecCoord = new double[3];
+
         // ======= properties =====================================================================================
         public double X
         {
@@ -49,24 +50,6 @@ namespace hull02
                 VecCoord[2] = value;
             }// end set
         }// end Z
-        //========================================================================================================
-        public double Length
-        {
-            // this property is read-only
-            get
-            {
-                return (Math.Sqrt(X * X + Y * Y + Z * Z));
-            }
-        } //end Length
-        //========================================================================================================
-        public bool IsZero
-        {
-            // this property is read-only
-            get
-            {
-                return (HullUtil.NearZero(Length));
-            }
-        } //end IsZero
         // ======= methods =======================================================================================
         public FreeVector3D() // default constructor
         {
@@ -99,6 +82,49 @@ namespace hull02
             }
         } // end constructor
         //========================================================================================================
+        public static FreeVector3D operator +(FreeVector3D A, FreeVector3D B)
+        {
+            FreeVector3D AplusB = new FreeVector3D();
+            AplusB.X = A.X + B.X;
+            AplusB.Y = A.Y + B.Y;
+            AplusB.Z = A.Z + B.Z;
+            return (AplusB);
+        } // end operator +
+        //========================================================================================================
+        public static FreeVector3D operator /(double s, FreeVector3D A)
+        {
+            FreeVector3D aDivS = new FreeVector3D();
+            if(HullUtil.NotNearZero(s))
+            {
+                aDivS.X = A.X / s;
+                aDivS.Y = A.Y / s;
+                aDivS.Z = A.Z / s;
+            }
+            return (aDivS);
+        } // end operator /
+        //========================================================================================================
+        public static FreeVector3D operator *(double s, FreeVector3D A)
+        {
+            FreeVector3D sA = new FreeVector3D();
+            sA.X = s * A.X;
+            sA.Y = s * A.Y;
+            sA.Z = s * A.Z;
+            return (sA);
+        } // end operator *
+        //========================================================================================================
+        public static FreeVector3D operator *(FreeVector3D A, double s)
+        { return (s * A); } // end operator *
+        //========================================================================================================
+        public static FreeVector3D operator - (FreeVector3D A, FreeVector3D B)
+        {
+            FreeVector3D AminusB = new FreeVector3D();
+            AminusB.X = A.X - B.X;
+            AminusB.Y = A.Y - B.Y;
+            AminusB.Z = A.Z - B.Z;
+            return (AminusB);
+        } //end operator -
+
+        //========================================================================================================
         public static double Dot(FreeVector3D A, FreeVector3D B)
         {
             double dotProd = 0.0;
@@ -124,31 +150,28 @@ namespace hull02
             return (nonZeroVectors && HullUtil.NearEqual(1.0 , Math.Abs(Dot(A2, B2))));
         } //end AreParallel
         //========================================================================================================
+        public double Length()
+        {
+            return (Math.Sqrt(X * X + Y * Y + Z * Z));
+        } //end Length
+        //========================================================================================================
+        public bool IsZero()
+        {
+            return (HullUtil.NearZero(Length()));
+        } //end Length
+        //========================================================================================================
         public bool Normalize()
         {
-            bool ok = !IsZero;
+            bool ok = !IsZero();
             if(ok)
             {
-                double magnitude = Length;
+                double magnitude = Length();
                 X = X / magnitude;
                 Y = Y / magnitude;
                 Z = Z / magnitude;
             }
             return (ok);
         } //end Normalize
-        //========================================================================================================
-        public bool TransformBy(Matrix4Sq M)
-        {
-            // a free vector is rotated by the 4X4 transformation matrix but there is no
-            // translation.
-            double newX = M.GetCoeff(0, 0) * X + M.GetCoeff(0, 1) * Y + M.GetCoeff(0, 2) * Z;
-            double newY = M.GetCoeff(1, 0) * X + M.GetCoeff(1, 1) * Y + M.GetCoeff(1, 2) * Z;
-            double newZ = M.GetCoeff(2, 0) * X + M.GetCoeff(2, 1) * Y + M.GetCoeff(2, 2) * Z;
-            X = newX;
-            Y = newY;
-            Z = newZ;
-            return (true);
-        } // end TransformBy
         //========================================================================================================
         public static FreeVector3D cross(FreeVector3D A, FreeVector3D B)
         {
@@ -158,49 +181,7 @@ namespace hull02
             aCrossB.Z = A.X * B.Y - A.Y * B.X;
             return (aCrossB);
         } //end cross
-        //======== operators ======================================================================================
-        public static FreeVector3D operator +(FreeVector3D A, FreeVector3D B)
-        {
-            FreeVector3D AplusB = new FreeVector3D();
-            AplusB.X = A.X + B.X;
-            AplusB.Y = A.Y + B.Y;
-            AplusB.Z = A.Z + B.Z;
-            return (AplusB);
-        } // end operator +
         //========================================================================================================
-        public static FreeVector3D operator /(double s, FreeVector3D A)
-        {
-            FreeVector3D aDivS = new FreeVector3D();
-            if (HullUtil.NotNearZero(s))
-            {
-                aDivS.X = A.X / s;
-                aDivS.Y = A.Y / s;
-                aDivS.Z = A.Z / s;
-            }
-            return (aDivS);
-        } // end operator /
-        //========================================================================================================
-        public static FreeVector3D operator *(double s, FreeVector3D A)
-        {
-            FreeVector3D sA = new FreeVector3D();
-            sA.X = s * A.X;
-            sA.Y = s * A.Y;
-            sA.Z = s * A.Z;
-            return (sA);
-        } // end operator *
-        //========================================================================================================
-        public static FreeVector3D operator *(FreeVector3D A, double s)
-        { return (s * A); } // end operator *
-        //========================================================================================================
-        public static FreeVector3D operator -(FreeVector3D A, FreeVector3D B)
-        {
-            FreeVector3D AminusB = new FreeVector3D();
-            AminusB.X = A.X - B.X;
-            AminusB.Y = A.Y - B.Y;
-            AminusB.Z = A.Z - B.Z;
-            return (AminusB);
-        } //end operator -
-
 
     } // end class FreeVector3D
 

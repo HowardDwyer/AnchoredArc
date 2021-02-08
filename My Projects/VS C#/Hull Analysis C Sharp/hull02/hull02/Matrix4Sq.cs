@@ -129,6 +129,11 @@ namespace hull02
             MXV.Z = M.GetCoeff(2, 0) * V.X + M.GetCoeff(2, 1) * V.Y + M.GetCoeff(2, 2) * V.Z;
             return;
         } // end Multiply
+<<<<<<< HEAD:My Projects/VS C#/Hull Analysis C Sharp/hull02/hull02/Matrix4Sq.cs
+=======
+        // ==================================================================================================
+
+>>>>>>> InventablesChallenge:My Projects/VS C#/Hull Analysis C Sharp/hull02/hull02/Matrix4Sq.cs
         // ======== operators ===============================================================================
         public static Matrix4Sq operator * (Matrix4Sq M1, Matrix4Sq M2)
         {
@@ -136,6 +141,10 @@ namespace hull02
             Multiply(M1, M2, ref M1XM2);
             return(M1XM2);
         } // end operator *
+<<<<<<< HEAD:My Projects/VS C#/Hull Analysis C Sharp/hull02/hull02/Matrix4Sq.cs
+=======
+
+>>>>>>> InventablesChallenge:My Projects/VS C#/Hull Analysis C Sharp/hull02/hull02/Matrix4Sq.cs
         // ==================================================================================================
         public static Point3D operator *(Matrix4Sq M, Point3D P)
         {
@@ -143,6 +152,10 @@ namespace hull02
             Multiply(M, P, ref MXP);
             return (MXP);
         } // end operator *
+<<<<<<< HEAD:My Projects/VS C#/Hull Analysis C Sharp/hull02/hull02/Matrix4Sq.cs
+=======
+
+>>>>>>> InventablesChallenge:My Projects/VS C#/Hull Analysis C Sharp/hull02/hull02/Matrix4Sq.cs
         // ==================================================================================================
         public static FreeVector3D operator *(Matrix4Sq M, FreeVector3D V)
         {
@@ -150,6 +163,10 @@ namespace hull02
             Multiply(M, V, ref MXV);
             return (MXV);
         } // end operator *
+<<<<<<< HEAD:My Projects/VS C#/Hull Analysis C Sharp/hull02/hull02/Matrix4Sq.cs
+=======
+
+>>>>>>> InventablesChallenge:My Projects/VS C#/Hull Analysis C Sharp/hull02/hull02/Matrix4Sq.cs
         // ==================================================================================================
     } // end Matrix4Sq
 }
