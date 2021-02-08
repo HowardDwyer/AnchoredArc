@@ -3,6 +3,10 @@
 //========================================================================================================
 #include <string>
 #include <vector>
+#include <thread>
+#include <mutex>
+#include <functional>
+#include <algorithm>
 #include <stdio.h>
 #include <math.h>
 #include <time.h>
@@ -22,138 +26,121 @@ CElement* m_pElements;
 
 void AllocateArrays();
 void PopulateArrays();
+void PopulateAreaArray();
+void PopulateTransposedAreaArray();
+void PopulateVectorX();
+void SetVectorsXandYtoZero();
 void MatrixMatrix();
+void MatrixMatrix_AAT();
+void MatrixMatrix_AAT_Parallel();
 void MatrixVector();
+void YplusATtimesAtimesX();
 void SetupModel();
+
+void Debug_MockAreaMatrix(int oneThirdOfSize);
+void Debug_MockTransposedAreaMatrix(int oneThirdOfSize);
 
 double* X;
 double* Y;
 double** area;
+double** areaT;
 double** ATA;
-double DX_GLOBAL = 0.5;
-
+double DX_GLOBAL = 4;
+bool EnablePrintToFile_GLOBAL = false;
+bool EnableDebugConsoleMsg_GLOBAL = true;
 int main(int argc, char** argv)
 {
+	double norm = 0;
 	// Setup Model
-	cout << "SetupModel\n";
+	if(EnableDebugConsoleMsg_GLOBAL){cout << "SetupModel\n";}
 	SetupModel();
 
-/*	// Allocate Arrays
-	cout << "AllocateArrays\n";
+	// Allocate Arrays
+	if(EnableDebugConsoleMsg_GLOBAL){cout << "AllocateArrays\n";}
 	AllocateArrays();
 
 	// POPULATE AREA AND X ARRAYS
-	cout << "PopulateArrays\n";
+	if(EnableDebugConsoleMsg_GLOBAL){cout << "PopulateArrays\n";}
 	PopulateArrays();
 
+//	if (EnableDebugConsoleMsg_GLOBAL) { cout << "Debug_MockAreaMatrix\n"; }
+//	Debug_MockAreaMatrix(200);
+//	Debug_MockTransposedAreaMatrix(3200);
+
 	// MATRIX MULTIPLICATION
-	cout << "MatrixMatrix\n";
-	MatrixMatrix();
+/*	if (EnableDebugConsoleMsg_GLOBAL) { cout << "MatrixMatrix\n"; }
+//	MatrixMatrix();
+	MatrixMatrix_AAT();
+//	MatrixMatrix_AAT_Parallel();
 
 	// COMPUTE Y = ATA*X
-	cout << "MatrixVector\n";
+	if (EnableDebugConsoleMsg_GLOBAL) { cout << "MatrixVector\n"; }
 	MatrixVector();
+*/
+	if (EnableDebugConsoleMsg_GLOBAL) { cout << "YplusATtimesAtimesX\n"; }
+	YplusATtimesAtimesX();
 
 	// PRINT L2 NORM OF Y
-	double norm = 0;
-	cout << "Y=( ";
+	if (EnableDebugConsoleMsg_GLOBAL) { cout << "Computing Norm\n"; }
 	for (int i = 0; i < 3 * m_nNumNodes; i++)
 	{
-		cout << Y[i] << " ";
 		norm = norm + Y[i] * Y[i];
 	}
-	cout << ")\n";
-	cout << "Squared norm = "<<norm<<'\n';
 	norm = sqrt(norm);
-	cout<< norm <<" L2 Norm\n";
-*/
+
 	//----------------------------------------------------------------------------------------------
 	clock_t total = clock();  // total execution time,in ticks
-	cout << "printf stmts\n";
-//	printf("(%3.5lf) L2 Norm\n", norm);
-//	printf("(%3.5lf seconds) in Total\n", ((float)total) / CLOCKS_PER_SEC);
-	double totalTime = ((double)total) / CLOCKS_PER_SEC; // dwyerdebug
-	cout << totalTime << " seconds in Total\n";          // dwyerdebug
+	if (EnablePrintToFile_GLOBAL) {
+		printf("(%3.5lf) L2 Norm\n", norm);
+		printf("(%3.5lf seconds) in Total\n", ((float)total) / CLOCKS_PER_SEC);
+	}
+	if(EnableDebugConsoleMsg_GLOBAL){
+		double totalTime = ((double)total) / CLOCKS_PER_SEC; 
+		cout << "L2 Norm: " << norm << '\n';
+		cout << totalTime << " seconds in Total\n";          
+	}
 
-	cout << "return\n";
+	if (EnableDebugConsoleMsg_GLOBAL) { cout << "return\n"; }
 	return 0;
-}
+} // main
 
-void AllocateArrays()
+//============== DEBUG MOCK AREA MATRIX ===============================================
+// used for testing only.  replaces SetupModel, AllocateArrays, PopulateArrays
+// matrix is square, dimension is three times the value of m_nNumNodes.
+// all entries are positive in the range (0, 4).
+void Debug_MockAreaMatrix(int oneThirdOfSize)
 {
-	X = new double[3 * m_nNumNodes];
-	Y = new double[3 * m_nNumNodes];
-	area = new double* [3 * m_nNumNodes];
-	for (int i = 0; i < 3 * m_nNumNodes; ++i)
-		area[i] = new double[3 * m_nNumNodes];
+	m_nNumNodes = oneThirdOfSize;
+	int numNodesTimesThree = 3 * m_nNumNodes;
+	AllocateArrays();
 
-	ATA = new double* [3 * m_nNumNodes];
-	for (int i = 0; i < 3 * m_nNumNodes; ++i)
-		ATA[i] = new double[3 * m_nNumNodes];
-
-}
-
-void MatrixVector()
-{
-	for (int i = 0; i < 3 * m_nNumNodes; i++)
+	for (int i=0;i<numNodesTimesThree;i++) 
 	{
-		Y[i] = 0.0;
-		for (int k = 0; k < 3 * m_nNumNodes; k++) {
-			Y[i] = Y[i] + ATA[i][k] * X[k];
+		for (int j = 0; j < numNodesTimesThree; j++)
+		{
+			// this formula is nonsense ... it gives positive values in a non-trivial but repeatable pattern
+			areaT[i][j] = 4.0*abs(sin(5*i + 7*j + 2));
 		}
 	}
+} // Debug_MockAreaMatrix
 
-}
-void MatrixMatrix()
+//============== DEBUG MOCK TRANSPOSED AREA MATRIX ===============================================
+// used for testing only.  replaces SetupModel, AllocateArrays, PopulateArrays
+void Debug_MockTransposedAreaMatrix(int oneThirdOfSize)
 {
-	// COMPUTE ATA = Area^T * Area;
-	for (int j = 0; j < 3 * m_nNumNodes; j++) {
-		for (int i = 0; i < 3 * m_nNumNodes; i++) {
-			ATA[i][j] = 0.0;
-			for (int k = 0; k < 3 * m_nNumNodes; k++) {
-				ATA[i][j] = ATA[i][j] + area[k][i] * area[k][j];
-			}
+	m_nNumNodes = oneThirdOfSize;
+	int numNodesTimesThree = 3 * m_nNumNodes;
+	AllocateArrays();
 
-		}
-	}
-}
-
-void PopulateArrays()
-{
-	// Loop over elements
-	for (int i = 0; i < m_nNumElems; i++)
+	for (int i = 0; i < numNodesTimesThree; i++)
 	{
-		// Loop over nodes in element
-		for (int k = 0; k < 3; k++) {
-
-			// Get Index of Node
-			int NodeNumber = m_pElements[i].GetNode(k)->GetLabel() - 1;
-			// Get Area of Element
-			double element_area = m_pElements[i].GetArea();
-
-			// Accumulate area in area[][] array
-			for (int j = 0; j < 3; j++) {
-				area[3 * NodeNumber + j][3 * NodeNumber + j] = area[3
-					* NodeNumber + j][3 * NodeNumber + j] + element_area;
-				if (3 * NodeNumber + j + 1 < 3 * m_nNumNodes) {
-					area[3 * NodeNumber + j + 1][3 * NodeNumber + j] = area[3
-						* NodeNumber + j + 1][3 * NodeNumber + j]
-						+ element_area / 3.0;
-				}
-				if (3 * NodeNumber + j - 1 > 0) {
-					area[3 * NodeNumber + j][3 * NodeNumber + j - 1] = area[3
-						* NodeNumber + j][3 * NodeNumber + j - 1]
-						+ element_area / 3.0;
-				}
-			}
-			// Accumulate normal in X[] array
-			CVector normal = m_pElements[i].GetFaceNormal();
-			X[3 * NodeNumber] = X[3 * NodeNumber] + normal.GetX();
-			X[3 * NodeNumber + 1] = X[3 * NodeNumber + 1] + normal.GetY();
-			X[3 * NodeNumber + 2] = X[3 * NodeNumber + 2] + normal.GetZ();
+		for (int j = 0; j < numNodesTimesThree; j++)
+		{
+			// this formula is nonsense ... it gives positive values in a non-trivial but repeatable pattern
+			areaT[j][i] = 4.0 * abs(sin(5 * i + 7 * j + 2));
 		}
 	}
-}
+} // Debug_MockTransposdAreaMatrix
 
 //=========== SET UP MODEL ==================================================================
 // width and height are hard-coded as 200 x 200
@@ -167,15 +154,12 @@ void SetupModel() {
 	// vertex indices: each element is composed of 3 nodes
 	int* conn1;
 
-	int ny = 0;
-	int nx = 0;
-
 	double dx = DX_GLOBAL;
 	double width = 200;
 	double height = 200;
-	nx = (int)(width / dx + 1);  // number of columns of nodes
-	ny = (int)(height / dx + 1); // number of rows of nodes
-	nnode = nx * ny;             // total number of nodes
+	int nx = (int)(width / dx + 1);  // number of columns of nodes
+	int ny = (int)(height / dx + 1); // number of rows of nodes
+	nnode = nx * ny;                 // total number of nodes
 
 	nodecoord1 = new double[3 * nnode]; // (X,Y,Z) for the coordinates
 	nelem = (nx - 1) * (ny - 1) * 2; // number of triangle elements
@@ -188,34 +172,31 @@ void SetupModel() {
 
 	//----------------------------------------------------------------------------------
 	// create simple mesh
-	int cnt;
-	int threeCnt = 0;
+//	int cnt;
+	int cntByThree = 0;
 	for (int i = 0; i < nx; i++) {
 		nodeXValue = negHalfWidth + i * dx;
 		for (int j = 0; j < ny; j++) {
-			nodecoord1[threeCnt] = nodeXValue;
-			nodecoord1[threeCnt + 1] = negHalfHeight + j * dx;
-			nodecoord1[threeCnt + 2] = 0;
-			threeCnt += 3;
+			nodecoord1[cntByThree] = nodeXValue;
+			nodecoord1[cntByThree + 1] = negHalfHeight + j * dx;
+			nodecoord1[cntByThree + 2] = 0.0;
+			cntByThree += 3;
 		}
 	}
 
 	//----------------------------------------------------------------------------------
-//	cnt = 0;
-	threeCnt = 0;
+	cntByThree = 0;
 	for (int i = 0; i < nx - 1; i++) {
 		for (int j = 0; j < ny - 1; j++) {
-			conn1[threeCnt] = i * ny + j + 1;
-			conn1[threeCnt + 1] = (i + 1) * ny + j + 1;
-			conn1[threeCnt + 2] = i * ny + j + 1 + 1;
-//			cnt++;
-			threeCnt += 3;
+			conn1[cntByThree] = i * ny + j + 1;
+			conn1[cntByThree + 1] = (i + 1) * ny + j + 1;
+			conn1[cntByThree + 2] = i * ny + j + 1 + 1;
+			cntByThree += 3;
 
-			conn1[threeCnt] = (i + 1) * ny + j + 1;
-			conn1[threeCnt + 1] = (i + 1) * ny + j + 1 + 1;
-			conn1[threeCnt + 2] = i * ny + j + 1 + 1;
-//			cnt++;
-			threeCnt += 3;
+			conn1[cntByThree] = (i + 1) * ny + j + 1;
+			conn1[cntByThree + 1] = (i + 1) * ny + j + 1 + 1;
+			conn1[cntByThree + 2] = i * ny + j + 1 + 1;
+			cntByThree += 3;
 		}
 	}
 
@@ -223,34 +204,298 @@ void SetupModel() {
 	m_nNumNodes = nnode;
 	m_nNumElems = nelem;
 
-	printf("Number of 3D Points: %d\n", m_nNumNodes);
-	printf("Number of Triangular Elements: %d\n", m_nNumElems);
+	if (EnablePrintToFile_GLOBAL) {
+		printf("Number of 3D Points: %d\n", m_nNumNodes);
+		printf("Number of Triangular Elements: %d\n", m_nNumElems);
+	}
 	m_pNodes = new CNode[m_nNumNodes];
 	m_pElements = new CElement[m_nNumElems];
 
 	//----------------------------------------------------------------------------------
-	int threeI=0;
+	cntByThree = 0;
 	for (int i = 0; i < m_nNumNodes; i++) {
-		m_pNodes[i].SetX(nodecoord1[threeI]);
-		m_pNodes[i].SetY(nodecoord1[threeI + 1]);
-		m_pNodes[i].SetZ(nodecoord1[threeI + 2]);
+		m_pNodes[i].SetX(nodecoord1[cntByThree]);
+		m_pNodes[i].SetY(nodecoord1[cntByThree + 1]);
+		m_pNodes[i].SetZ(nodecoord1[cntByThree + 2]);
 		m_pNodes[i].SetLabel(i + 1);
 		m_pNodes[i].SetInternalLabel(i);
-		threeI += 3;
+		cntByThree += 3;
 	}
 
 	//----------------------------------------------------------------------------------
 	// Setup elements
-	threeI = 0;
+	cntByThree = 0;
 	for (int i = 0; i < m_nNumElems; i++) {
-		m_pElements[i].SetNode(0, &m_pNodes[conn1[threeI] - 1]);
-		m_pElements[i].SetNode(1, &m_pNodes[conn1[threeI + 1] - 1]);
-		m_pElements[i].SetNode(2, &m_pNodes[conn1[threeI + 2] - 1]);
+		m_pElements[i].SetNode(0, &m_pNodes[conn1[cntByThree] - 1]);
+		m_pElements[i].SetNode(1, &m_pNodes[conn1[cntByThree + 1] - 1]);
+		m_pElements[i].SetNode(2, &m_pNodes[conn1[cntByThree + 2] - 1]);
 		m_pElements[i].SetLabel(i + 1);
-		threeI += 3;
+		cntByThree += 3;
 	}
 	//------------------------------------------------------------------------------------
 	// release resources
 	delete[] nodecoord1;
 	delete[] conn1;
 }// SetupModel
+
+//===================== SET VECTORS X AND Y TO ZERO ===================================================
+void SetVectorsXandYtoZero()
+{
+	int numNodesTimesThree = 3 * m_nNumNodes;
+	for (int i = 0; i < numNodesTimesThree; i++) { X[i] = Y[i] = 0.0; }
+} // SetVectorsXandYtoZero()
+
+ //============== ALLOCATE ARRAYS ==================================================================
+void AllocateArrays()
+{
+	int numNodesTimesThree = 3 * m_nNumNodes;
+
+	// X and Y are 1D arrays
+	X = new double[numNodesTimesThree];
+	Y = new double[numNodesTimesThree];
+	SetVectorsXandYtoZero();
+	// area is a square 2D array
+	area = new double* [numNodesTimesThree];
+	for (int i = 0; i < numNodesTimesThree; ++i)
+		area[i] = new double[numNodesTimesThree];
+//	areaT = new double* [numNodesTimesThree];
+//	for (int i = 0; i < numNodesTimesThree; ++i)
+//		areaT[i] = new double[numNodesTimesThree];
+
+	// ATA is a square 2D array
+//	ATA = new double* [numNodesTimesThree];
+//	for (int i = 0; i < numNodesTimesThree; ++i)
+//		ATA[i] = new double[numNodesTimesThree];
+} // AllocateArrays
+
+//===================== POPULATE ARRAYS ===================================================
+void PopulateArrays()
+{
+	PopulateAreaArray();
+//	PopulateTransposedAreaArray();
+	PopulateVectorX();
+} // PopulateArrays
+
+//===================== POPULATE AREA ARRAY ===================================================
+void PopulateAreaArray()
+{
+	int nodeIndexTimesThree;
+	int numOfNodesTimesThree = 3 * m_nNumNodes;
+	double oneThird = 1.0 / 3.0;
+	// Loop over elements
+	for (int i = 0; i < m_nNumElems; i++)
+	{
+		// Get Area of Element
+		double element_area = m_pElements[i].GetArea();
+		double oneThirdArea = element_area * oneThird;
+
+		// Loop over vertices in this triangular element
+		for (int k = 0; k < 3; k++) {
+
+			// Get Index of Node which is located at vertex k in triangular element i.
+			int nodeNumber = m_pElements[i].GetNode(k)->GetLabel() - 1;
+			nodeIndexTimesThree = nodeNumber * 3;
+
+			// Accumulate area in area[][] array
+			for (int j = 0; j < 3; j++)
+			{
+				area[nodeIndexTimesThree + j][nodeIndexTimesThree + j] += element_area;
+
+				if (nodeIndexTimesThree + j + 1 < numOfNodesTimesThree)
+				{
+					area[nodeIndexTimesThree + j + 1][nodeIndexTimesThree + j] += oneThirdArea;
+				}
+
+				if (nodeIndexTimesThree + j - 1 > 0)
+				{
+					area[nodeIndexTimesThree + j][nodeIndexTimesThree + j - 1] += oneThirdArea;
+				}
+			}
+		} // loop through the nodes which are vertices for this element
+	} // loop through each triangular element
+} // PopulateAreaArray
+
+//===================== POPULATE TRANSPOSED AREA ARRAY ===================================================
+void PopulateTransposedAreaArray()
+{
+	int nodeIndexTimesThree;
+	int numOfNodesTimesThree = 3 * m_nNumNodes;
+	double oneThird = 1.0 / 3.0;
+	// Loop over elements
+	for (int i = 0; i < m_nNumElems; i++)
+	{
+		// Get Area of Element
+		double element_area = m_pElements[i].GetArea();
+		double oneThirdArea = element_area * oneThird;
+
+		// Loop over vertices in this triangular element
+		for (int k = 0; k < 3; k++) {
+
+			// Get Index of Node which is located at vertex k in triangular element i.
+			int nodeNumber = m_pElements[i].GetNode(k)->GetLabel() - 1;
+			nodeIndexTimesThree = nodeNumber * 3;
+
+			// Accumulate area in areaT[][] array
+			for (int j = 0; j < 3; j++)
+			{
+				areaT[nodeIndexTimesThree + j][nodeIndexTimesThree + j] += element_area;
+
+				if (nodeIndexTimesThree + j + 1 < numOfNodesTimesThree)
+				{
+					areaT[nodeIndexTimesThree + j][nodeIndexTimesThree + j + 1] += oneThirdArea;
+				}
+
+				if (nodeIndexTimesThree + j - 1 > 0)
+				{
+					areaT[nodeIndexTimesThree + j - 1][nodeIndexTimesThree + j] += oneThirdArea;
+				}
+			}
+		} // loop through the nodes which are vertices for this element
+	} // loop through each triangular element
+} //PopulateTransposedAreaArray
+
+//===================== POPULATE VECTOR X ===================================================
+void PopulateVectorX()
+{
+	int nodeIndexTimesThree;
+	// Loop over elements
+	for (int i = 0; i < m_nNumElems; i++)
+	{
+		// Loop over vertices in this triangular element
+		for (int k = 0; k < 3; k++) {
+			// Get Index of Node which is located at vertex k in triangular element i.
+			int nodeNumber = m_pElements[i].GetNode(k)->GetLabel() - 1;
+			nodeIndexTimesThree = nodeNumber * 3;
+
+			// Accumulate normals of triangular elements in X[] array
+			CVector normal = m_pElements[i].GetFaceNormal();
+			X[nodeIndexTimesThree]     += normal.GetX();
+			X[nodeIndexTimesThree + 1] += normal.GetY();
+			X[nodeIndexTimesThree + 2] += normal.GetZ();
+		} // loop through the nodes which are vertices for this element
+	} // loop through each triangular element
+} // PopulateArrays
+
+//================= MATRIX MATRIX ===================================================================
+// COMPUTE ATA = Area^T * Area;
+void MatrixMatrix()
+{
+	int numNodesTimesThree = 3 * m_nNumNodes;
+	for (int j = 0; j < numNodesTimesThree; j++) {
+		for (int i = j; i < numNodesTimesThree; i++) {
+			double dotProdSum = 0.0;
+			for (int k = 0; k < numNodesTimesThree; k++) {
+				// note: the "out of order" indices in the first term is intentional because
+				// we are multiplying using the transpose as the first matrix.
+				dotProdSum += area[k][i] * area[k][j];
+			}
+			ATA[i][j] = dotProdSum;
+			ATA[j][i] = dotProdSum;
+		}
+	}
+} // MatrixMatrix
+
+//================= MATRIX MATRIX A AT ============================================================
+// COMPUTE ATA = AreaT * AreaT^T;
+void MatrixMatrix_AAT()
+{
+	int numNodesTimesThree = 3 * m_nNumNodes;
+	double* row_i ;
+	double* row_j ;
+
+	for (int j = 0; j < numNodesTimesThree; j++) {
+		row_j = areaT[j];
+		for (int i = j; i < numNodesTimesThree; i++) {
+			row_i = areaT[i];
+			double dotProdSum = 0.0;
+			for (int k = 0; k < numNodesTimesThree; k++) {
+				dotProdSum += row_i[k] * row_j[k];
+			}
+			ATA[i][j] = dotProdSum;
+			ATA[j][i] = dotProdSum;
+		}
+	}
+} // MatrixMatrix_AAT
+
+//================= MATRIX MATRIX A AT PARALLEL ====================================================
+// COMPUTE ATA = AreaT * AreaT^T;
+void MatrixMatrix_AAT_Parallel()
+{
+	int numNodesTimesThree = 3 * m_nNumNodes;
+	double* row_i;
+	double* row_j;
+	int nThreads = thread::hardware_concurrency();
+	if (EnableDebugConsoleMsg_GLOBAL) { cout << nThreads << " threads\n"; }
+	vector<thread> threadVector(nThreads);
+	mutex critical;
+	//--------------------------------------------------------------------------------------
+	for (int t = 0; t < nThreads; t++)
+	{
+		threadVector[t] = thread(bind(
+			[&](const int bj, const int ej, const int t)
+			{
+				for (int j = bj; j < ej; j++)
+				{
+					row_j = areaT[j];
+					for (int i = j; i < numNodesTimesThree; i++) {
+						row_i = areaT[i];
+						double dotProdSum = 0.0;
+						for (int k = 0; k < numNodesTimesThree; k++) {
+							dotProdSum += row_i[k] * row_j[k];
+						}
+						ATA[i][j] = dotProdSum;
+						ATA[j][i] = dotProdSum;
+					} // for i
+				} // for j
+			}, t * numNodesTimesThree / nThreads,
+			(t + 1) == nThreads ? numNodesTimesThree :
+				(t + 1) * numNodesTimesThree / nThreads,
+				t));
+	} // for t
+	for_each(threadVector.begin(), threadVector.end(), [](thread& x) {x.join(); });
+} // MatrixMatrix_AAT_Parallel
+
+//============== Y +AT*(A*X) ========================================================
+void YplusATtimesAtimesX()
+{
+	double* tmpVector;
+	int numNodesTimesThree = 3 * m_nNumNodes;
+	tmpVector = new double[numNodesTimesThree];
+	//------------------------------------------------------------------------------
+	// compute tmpVector = A*X
+	for(int i=0; i<numNodesTimesThree;i++)
+	{
+		double sum = 0.0;
+		for (int j = 0; j < numNodesTimesThree; j++){sum += area[i][j] * X[j];}
+		tmpVector[i] = sum;
+	}
+	//------------------------------------------------------------------------------
+	// compute Y + AT*tmpVector
+	for (int i = 0; i < numNodesTimesThree; i++)
+	{
+		double sum = 0.0;
+		for (int j = 0; j < numNodesTimesThree; j++) { sum += area[j][i] * tmpVector[j]; }
+		Y[i] += sum;
+	}
+	//------------------------------------------------------------------------------
+	delete[] tmpVector;
+} // YplusATtimesAtimesX
+
+//============== MATRIX VECTOR ========================================================
+//  performs  Y = Y + ATA*X
+void MatrixVector()
+{
+	int numNodesTimesThree = 3 * m_nNumNodes;
+	double dotProdSum;
+	double* row_i;
+	for (int i = 0; i < numNodesTimesThree; i++)
+	{
+		dotProdSum = 0.0;
+		row_i = ATA[i];
+		for (int k = 0; k < numNodesTimesThree; k++) {
+			dotProdSum = dotProdSum + row_i[k] * X[k];
+		}
+		Y[i] = dotProdSum;
+	}
+} // MatrixVector
+
