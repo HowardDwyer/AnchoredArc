@@ -1,112 +1,112 @@
 #include "stdafx.h" ;
 #include "LeastSquaresArc.h"
 
-//==== Point ==============================================================
+//====================================================================================
+//   Point
+//====================================================================================
 double Point::DistFrom(const Point& otherP)const
 {
 	return sqrt((X() - otherP.X())*(X() - otherP.X()) + (Y() - otherP.Y())*(Y() - otherP.Y()));
-}
+} // Point::DistFrom
 
+//====================================================================================
 double Point::Dot(const Point& otherP)const
 {
 	return (X() * otherP.X()) + (Y() * otherP.Y());
-}
+} // Point::Dot
 
+//====================================================================================
 bool Point::operator == (const Point& other)
 {
 	return NearlyEqual(X(), other.X()) && NearlyEqual(Y(), other.Y());
-}
+} // Point::operator ==
 
+//====================================================================================
 void Point::operator += (const Point& other)
 {
 	SetX(X() + other.X());
 	SetY(Y() + other.Y());
-}
+} // Point::operator +=
 
+//====================================================================================
 void Point::operator -= (const Point& other)
 {
 	SetX(X() - other.X());
 	SetY(Y() - other.Y());
-}
+} // Point::operator -=
 
+//====================================================================================
 void Point::operator *= (const double factor)
 {
 	SetX(X()*factor);
 	SetY(Y()*factor);
-}
+} // Point::operator *= 
 
+//====================================================================================
 void Point::operator /= (const double divisor)
 {
 	SetX(X() / divisor);
 	SetY(Y() / divisor);
-}
+} // Point::operator /=
 
+//====================================================================================
 Point Point::operator + (const Point& RHS)
 {
 	Point result(X() + RHS.X(), Y() + RHS.Y());
 	return result;
-}
+} // Point::operator +
 
+//====================================================================================
 Point Point::operator - (const Point& RHS)
 {
 	Point result(X() - RHS.X(), Y() - RHS.Y());
 	return result;
-}
+} // Point::operator -
 
-//==== SetOfPoints ==============================================================
+//====================================================================================
+//   SetOfPoints
+//====================================================================================
 SetOfPoints::SetOfPoints(const SetOfPoints& initSet)
 {
 	LoadList(initSet.fPointList);
-}
+} // SetOfPoints::SetOfPoints
 
-void SetOfPoints::ComputeCentroid()const
-{
-	if (Size() > 0){
-		Point tempPoint(0.0, 0.0);
-		for (auto thisPoint : fPointList){
-			tempPoint += thisPoint;
-		}
-		tempPoint /= Size();
-		fCentroid.Set(tempPoint);
-		fCentroidComputed = true;
-	}
-	else{
-		fCentroidComputed = false;
-		fCentroid.SetX(0.0);
-		fCentroid.SetY(0.0);
-	}
-}
-
+//====================================================================================
 void SetOfPoints::Append(const Point& newPoint)
 {
 	fPointList.push_back(newPoint);
-	fCentroidComputed = false;
-}
+} // SetOfPoints::Append
 
+//====================================================================================
 void SetOfPoints::LoadList(const std::vector<Point>& newList)
 {
 	fPointList = newList;
-	fCentroidComputed = false;
-}
+} // SetOfPoints::LoadList
 
-//==== Circle ==============================================================
+//====================================================================================
+//   Circle
+//====================================================================================
 bool Circle::IsPointOnCircle(const Point& P)const
 {
 	return NearlyEqual(DistFrom(P), 0.0);
-}
+} // Circle::IsPointOnCircle
 
+//====================================================================================
 double Circle::DistFrom(const Point& P)const
 {
 	return abs(Radius() - Center().DistFrom(P));
-}
+} // Circle::DistFrom
 
+//====================================================================================
 bool Circle::operator == (const Circle& other)
 {
 	return NearlyEqual(Radius(), other.Radius()) && (Center() == other.Center());
-}
+} // Circle::operator ==
 
-//==== TransfMatrix ======================================================
-void TransfMatrix::SetToIdentity()
+//====================================================================================
+//   Matrix3X3
+//====================================================================================
+void Matrix3X3::SetToIdentity()
 {
 	for (int iRow = 0; iRow < 3; iRow++)
 	{
@@ -116,11 +116,12 @@ void TransfMatrix::SetToIdentity()
 		}
 		fValues[iRow][iRow] = 1.0;
 	}
-}
+} // atrix3X3::SetToIdentity
 
-TransfMatrix TransfMatrix::operator *(const TransfMatrix& RHS)const
+//====================================================================================
+Matrix3X3 Matrix3X3::operator *(const Matrix3X3& RHS)const
 {
-	TransfMatrix result;
+	Matrix3X3 result;
 	for (int iRow = 0; iRow < 3; iRow++)
 	{
 		for (int iColumn = 0; iColumn < 3; iColumn++)
@@ -134,9 +135,10 @@ TransfMatrix TransfMatrix::operator *(const TransfMatrix& RHS)const
 		}
 	}
 	return result;
-}
+} // Matrix3X3::operator *
 
-Point TransfMatrix::TransformPoint(const Point& P)const
+//====================================================================================
+Point Matrix3X3::TransformPoint(const Point& P)const
 {
 	Point result;
 	double dot = At(0, 0)*P.X() + At(0, 1)*P.Y() + At(0, 2);
@@ -144,16 +146,19 @@ Point TransfMatrix::TransformPoint(const Point& P)const
 	dot = At(1, 0)*P.X() + At(1, 1)*P.Y() + At(1, 2);
 	result.SetY(dot);
 	return result;
-}
+} // Matrix3X3::TransformPoint
 
-//==== AnchoredArcProblem ==================================================
+//====================================================================================
+//   AnchoredArcProblem
+//====================================================================================
 void AnchoredArcProblem::SetProblem(const Point& A, const Point& B, const SetOfPoints& ptList)
 {
 	SetPointA(A);
 	SetPointB(B);
 	SetPointList(ptList);
-}
+} // AnchoredArcProblem::SetProblem
 
+//====================================================================================
 std::tuple<bool, Circle> AnchoredArcProblem::Solve()
 {
 	bool success = !PointsAreCollinear();
@@ -178,11 +183,12 @@ std::tuple<bool, Circle> AnchoredArcProblem::Solve()
 	}
 	std::tuple<bool, Circle> result{ success, bestFit };
 	return result;
-}
+} // AnchoredArcProblem::Solve
 
+//====================================================================================
 void AnchoredArcProblem::BuildTransformMatrices()
 {
-	TransfMatrix T1, T2, T3, invT1, invT2, invT3;
+	Matrix3X3 T1, T2, T3, invT1, invT2, invT3;
 	//------------------------------------------------------
 	// translation matrices
 	Point midPoint = fA + fB;
@@ -220,8 +226,9 @@ void AnchoredArcProblem::BuildTransformMatrices()
 	//------------------------------------------------------
 	fT = T3*T2*T1;
 	fInvT = invT1*invT2*invT3;
-}
+} // AnchoredArcProblem::BuildTransformMatrices
 
+//====================================================================================
 std::tuple<double, double, double, double> AnchoredArcProblem::FormSums()const
 {
 	double sumX2Y = 0.0;
@@ -239,8 +246,9 @@ std::tuple<double, double, double, double> AnchoredArcProblem::FormSums()const
 	}
 	std::tuple<double, double, double, double> result{ sumX2Y, sumY3, sumY, sumY2 };
 	return result;
-}
+} // AnchoredArcProblem::FormSums
 
+//====================================================================================
 bool AnchoredArcProblem::PointsAreCollinear()const
 {
 	bool result = true;
@@ -258,4 +266,6 @@ bool AnchoredArcProblem::PointsAreCollinear()const
 		}
 	}
 	return result;
-}
+} // AnchoredArcProblem::PointsAreCollinear
+
+//====================================================================================

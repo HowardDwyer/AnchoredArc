@@ -7,6 +7,7 @@
 
 //====================================================================================
 // Utilities
+//====================================================================================
 const double kRelTol = 1.0e-5;
 
 inline bool NearlyEqual(const double a, const double b)
@@ -15,6 +16,8 @@ inline bool NearlyEqual(const double a, const double b)
 	return (abs(a - b) < kRelTol*maxValue);
 } // NearlyEqual
 
+//====================================================================================
+// Classes
 //====================================================================================
 class Point{
 public:
@@ -50,18 +53,14 @@ public:
 	SetOfPoints(const SetOfPoints& initSet);
 
 	Point At(const int index)const{ return fPointList.at(index); }
-	Point Centroid()const{ if (!fCentroidComputed){ ComputeCentroid(); } return fCentroid; }
 	int Size()const{ return fPointList.size(); }
 	bool Empty()const { return fPointList.empty(); }
-	void Clear() { fPointList.clear(); fCentroidComputed = false; }
+	void Clear() { fPointList.clear(); }
 	void Append(const Point& newPoint);
 	void LoadList(const std::vector<Point>& newList);
 
 private:
 	std::vector<Point> fPointList;
-	mutable bool fCentroidComputed = false;
-	mutable Point fCentroid;
-	void ComputeCentroid()const;
 }; // class SetOfPoints
 
 //====================================================================================
@@ -89,20 +88,20 @@ private:
 }; // class Circle
 
 //====================================================================================
-class TransfMatrix{
+class Matrix3X3{
 public:
-	TransfMatrix(){};
+	Matrix3X3(){};
 	void SetToIdentity();
 
 	double At(const int iRow, const int iColumn)const { return fValues[iRow][iColumn]; }
 	void Set(const int iRow, const int iColumn, const double value) { fValues[iRow][iColumn] = value; }
 
-	TransfMatrix operator *(const TransfMatrix& RHS)const;
+	Matrix3X3 operator *(const Matrix3X3& RHS)const;
 	Point TransformPoint(const Point& P)const;
 
 private:
 	double fValues[3][3];
-}; // class TransfMatrix
+}; // class Matrix3X3
 
 //====================================================================================
 class AnchoredArcProblem{
@@ -131,6 +130,8 @@ private:
 	Point fA;
 	Point fB;
 	SetOfPoints fPointsList;
-	TransfMatrix fT;
-	TransfMatrix fInvT;
+	Matrix3X3 fT;
+	Matrix3X3 fInvT;
 };  // class AnchoredArcProblem
+
+//====================================================================================
