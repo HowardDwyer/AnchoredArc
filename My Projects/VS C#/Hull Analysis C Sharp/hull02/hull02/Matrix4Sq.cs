@@ -6,18 +6,16 @@ using System.Text;
 
 namespace hull02
 {
-    class Matrix4Sq
+    public class Matrix4Sq
     {
         // ======= fields =========================================================================================
         private double[,] coeffValue = new double[4, 4];
-
-        // ======= constructors ===================================================================================
+        // ======= methods ========================================================================================
         public Matrix4Sq()
         {
             SetToZero();
         } // end default constructor
-
-        // ======= methods ========================================================================================
+        // ==================================================================================================
         private void SetZero()
         {
             for (int iRow = 0; iRow < 4;iRow++ )
@@ -25,7 +23,6 @@ namespace hull02
                     coeffValue[iRow, iCol] = 0.0;
             return;
         }  // end SetZero
-
         // ==================================================================================================
         public void SetToZero()
         {
@@ -34,7 +31,6 @@ namespace hull02
             coeffValue[3, 3] = 1.0;
             return;
         }  // end SetToZero
-
         // ==================================================================================================
         public void SetToIdentity()
         {
@@ -43,7 +39,6 @@ namespace hull02
                 coeffValue[i, i] = 1.0;
             return;
         }  // end SetToIdentity
-
         // ==================================================================================================
         public bool SetCoeff(int iRow,int iCol, double newCoeff)
         {
@@ -52,7 +47,6 @@ namespace hull02
             if (ok) coeffValue[iRow, iCol] = newCoeff;
             return(ok);
         }  // end SetCoeff
-
         // ==================================================================================================
         public double GetCoeff(int iRow, int iCol)
         {
@@ -61,7 +55,6 @@ namespace hull02
             if (ok) result=coeffValue[iRow, iCol];
             return (result);
         }  // end GetCoeff
-
         // ==================================================================================================
         public void SetToTranslate(double dx, double dy, double dz = 0.0)
         {
@@ -71,7 +64,6 @@ namespace hull02
             SetCoeff(2, 3, dz);
             return;
         } // SetToTranslate
-
         // ==================================================================================================
         public void SetToRotateXY(double angleInDegrees)
         {
@@ -85,7 +77,6 @@ namespace hull02
             SetCoeff(1, 1, cs);
             return;
         } // SetToRotateXY
-
         // ==================================================================================================
         public void SetToRotateYZ(double angleInDegrees)
         {
@@ -99,7 +90,6 @@ namespace hull02
             SetCoeff(2, 2, cs);
             return;
         } // SetToRotateYZ
-
         // ==================================================================================================
         public void SetToRotateZX(double angleInDegrees)
         {
@@ -113,7 +103,6 @@ namespace hull02
             SetCoeff(2, 2, cs);
             return;
         } // SetToRotateZX
-
         // ======= static methods ===========================================================================
         public static void Multiply(Matrix4Sq M1, Matrix4Sq M2, ref Matrix4Sq M1XM2)
         {
@@ -124,7 +113,6 @@ namespace hull02
                         M1XM2.coeffValue[iRow, iCol] += M1.coeffValue[iRow, k] * M2.coeffValue[k, iCol];
             return;
         } // end Multiply
-
         // ==================================================================================================
         public static void Multiply(Matrix4Sq M, Point3D P, ref Point3D MXP)
         {
@@ -141,8 +129,6 @@ namespace hull02
             MXV.Z = M.GetCoeff(2, 0) * V.X + M.GetCoeff(2, 1) * V.Y + M.GetCoeff(2, 2) * V.Z;
             return;
         } // end Multiply
-        // ==================================================================================================
-
         // ======== operators ===============================================================================
         public static Matrix4Sq operator * (Matrix4Sq M1, Matrix4Sq M2)
         {
@@ -150,7 +136,6 @@ namespace hull02
             Multiply(M1, M2, ref M1XM2);
             return(M1XM2);
         } // end operator *
-
         // ==================================================================================================
         public static Point3D operator *(Matrix4Sq M, Point3D P)
         {
@@ -158,7 +143,6 @@ namespace hull02
             Multiply(M, P, ref MXP);
             return (MXP);
         } // end operator *
-
         // ==================================================================================================
         public static FreeVector3D operator *(Matrix4Sq M, FreeVector3D V)
         {
@@ -166,7 +150,6 @@ namespace hull02
             Multiply(M, V, ref MXV);
             return (MXV);
         } // end operator *
-
         // ==================================================================================================
     } // end Matrix4Sq
 }

@@ -69,6 +69,11 @@ namespace hull02
             return (true);
         } // end Draw
         //========================================================================================================
+        public virtual bool TransformBy(Matrix4Sq M)
+        {
+            return (true);
+        } // end TransformBy
+        //========================================================================================================
         public virtual void ScaleBy(double scaleFactor)
         {
             return;

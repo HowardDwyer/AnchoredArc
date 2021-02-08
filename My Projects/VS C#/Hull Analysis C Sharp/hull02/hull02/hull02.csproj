@@ -63,7 +63,10 @@
       <DependentUpon>MainDrawingPanel.cs</DependentUpon>
     </Compile>
     <Compile Include="Matrix4Sq.cs" />
+    <Compile Include="Plane3D.cs" />
+    <Compile Include="PlanePolygon3D.cs" />
     <Compile Include="Point3D.cs" />
+    <Compile Include="Polygon3D.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Spline5Points1D.cs" />

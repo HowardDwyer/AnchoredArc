@@ -2,10 +2,10 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
-
+    // =======================================================================================
     namespace hull02
     {
-        static class HullUtil
+        public static class HullUtil
         {
             //==============================================================================================================
             // this class is used as a container for utility methods used in hull analysis projects
