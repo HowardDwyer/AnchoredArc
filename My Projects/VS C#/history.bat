@@ -1,1 +1,0 @@
-git log --graph --oneline --abbrev-commit --decorate --first-parent HEAD
